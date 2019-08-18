@@ -9,8 +9,6 @@ Shell and Ansible.
 
 - [VirtualBox](https://virtualbox.org/)
 - [Vagrant](https://vagrantup.com/)
-- Vagrant Plugins
-  - vagrant-vbguest
 
 
 ## Getting started
@@ -28,6 +26,13 @@ After provision go to `bootstrap.vm` host and run ansible provision:
 vagrant ssh bootstrap.vm
 cd  /vagrant/ansible
 ansible-playbook -i hosts playbook.yml
+```
+
+Restart VMs
+
+```bash
+vagrant halt
+vagrant up
 ```
 
 Then setup Kubernetes cluster:
@@ -55,9 +60,13 @@ V="$(kubectl version | base64 | tr -d '\n')"
 kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$V"
 
 # Dashboard
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml
+D="https://raw.githubusercontent.com/kubernetes/dashboard"
+kubectl apply -f "$D/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml"
+```
 
-# check
+Test the installation:
+
+```bash
 kubectl get pods --all-namespaces
 ```
 
