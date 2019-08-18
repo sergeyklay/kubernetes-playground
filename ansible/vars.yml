@@ -11,3 +11,5 @@ packages:
   - tmux
   - socat
   - vim
+  - ebtables
+  - ethtool
