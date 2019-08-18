@@ -71,9 +71,7 @@
         dest: /etc/sysctl.d/99-kubernetes-cri.conf
 
     - name: Upgrade all packages to the latest version
-      apt:
-        name: "*"
-        state: latest
+      shell: "apt-mark hold docker-ce && apt-get upgrade --quiet --yes"
 
     - name: Remove useless packages from the cache
       apt:

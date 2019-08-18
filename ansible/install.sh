@@ -7,7 +7,10 @@ export DEBIAN_FRONTEND=noninteractive
 
 echo "Preliminary installation..."
 
+apt-mark hold linux-image-$(uname -r) linux-modules-$(uname -r) linux-modules-extra-$(uname -r)
 apt-get update --quiet --yes > /dev/null 2>&1 || true
+apt-get upgrade --quiet --yes > /dev/null 2>&1 || true
+
 apt-get --quiet --yes --fix-missing install sshpass curl > /dev/null 2>&1 || true
 curl -sSL https://bootstrap.pypa.io/get-pip.py | python > /dev/null 2>&1 || true
 pip install --quiet --no-color ansible
@@ -32,6 +35,5 @@ hostname "$(hostname | cut -d. -f1)".vm
 
 echo "Cleanup..."
 
-apt-mark hold linux-image-$(uname -r) linux-modules-$(uname -r) linux-modules-extra-$(uname -r)
 apt-get autoremove --quiet --yes
 apt-get autoclean --quiet --yes
