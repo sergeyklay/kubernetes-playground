@@ -71,7 +71,7 @@
     - name: Load necessary modules
       shell: 'modprobe overlay && modprobe br_netfilter'
 
-    - name: Setup required sysctl params for CRI-O
+    - name: Configure iptables to receive bridged network traffic
       copy:
         src: /vagrant/ansible/resources/99-kubernetes-cri.conf
         dest: /etc/sysctl.d/99-kubernetes-cri.conf
@@ -99,14 +99,6 @@
         path: /etc/containerd/config.toml
         regexp: 'systemd_cgroup = false'
         line: 'systemd_cgroup = true'
-
-    # I'm not sure we need to restart containerd at this time
-    # because at this time the system anyway will ask for restart
-    - name: Restart service containerd
-      systemd:
-        state: restarted
-        name: containerd
-        no_block: yes
 
     - name: Upgrade all packages to the latest version
       apt:
