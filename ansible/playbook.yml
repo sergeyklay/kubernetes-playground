@@ -9,9 +9,6 @@
     - name: Hack to resolve Problem with MergeList Issue
       shell: 'find /var/cache/apt/archives /var/lib/apt/lists -not -name lock -type f -delete'
 
-    - name: Lock Package Updates using Apt Tool
-      shell: 'apt-mark hold linux-image-$(uname -r) linux-modules-$(uname -r) linux-modules-extra-$(uname -r)'
-
     - name: Preliminary installation
       apt:
         name:
