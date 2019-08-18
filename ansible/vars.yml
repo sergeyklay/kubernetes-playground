@@ -1,15 +1,13 @@
 ---
 packages:
-  - containerd.io
-  - curl
-  - docker-ce=18.06.2~ce~3-0~ubuntu
+  - "docker-ce=18.06.2~ce~3-0~ubuntu"
+  - ebtables
+  - ethtool
   - htop
   - kubeadm
   - kubectl
   - kubelet
   - kubernetes-cni
-  - tmux
   - socat
+  - tmux
   - vim
-  - ebtables
-  - ethtool

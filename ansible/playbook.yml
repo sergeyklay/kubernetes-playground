@@ -9,10 +9,8 @@
     - name: Hack to resolve Problem with MergeList Issue
       shell: 'find /var/cache/apt/archives /var/lib/apt/lists -not -name lock -type f -delete'
 
-    - name: Update apt cache directly (apt module not reliable)
-      shell: 'apt-get clean && apt-get update'
-      args:
-        warn: False
+    - name: Lock Package Updates using Apt Tool
+      shell: 'apt-mark hold linux-image-$(uname -r) linux-modules-$(uname -r) linux-modules-extra-$(uname -r)'
 
     - name: Preliminary installation
       apt:
@@ -21,30 +19,35 @@
           - ca-certificates
           - gnupg-agent
           - software-properties-common
-          - python-apt
+          - curl
+        update_cache: yes
         state: present
         force: yes
 
     - name: Add the Google signing key
-      apt_key: url=https://packages.cloud.google.com/apt/doc/apt-key.gpg state=present
+      apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        state: present
 
     - name: Add Docker's official GPG key
-      apt_key: url=https://download.docker.com/linux/ubuntu/gpg state=present
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
 
     - name: Add the k8s APT repository
-      apt_repository: repo='deb http://apt.kubernetes.io/ kubernetes-xenial main' state=present
+      apt_repository:
+        repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+        state: present
 
     - name: Add Docker apt repository
-      apt_repository: repo='deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable' state=present
-
-    - name: Add the projectatomic repo for recent CRI-O version
-      apt_repository: repo='ppa:projectatomic/ppa' state=present
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable
+        state: present
 
     - name: Install packages
       apt:
         name: "{{ packages }}"
         state: present
-        update_cache: yes
         force: yes
 
     - name: Setup docker daemon
@@ -54,12 +57,9 @@
 
     - name: Create necessary directories if they don't exist
       file:
-        path: "{{ item }}"
+        path: /etc/systemd/system/docker.service.d
         state: directory
         recurse: yes
-      with_items:
-        - /etc/containerd
-        - /etc/systemd/system/docker.service.d
 
     - name: Restart service docker
       systemd:
@@ -68,37 +68,10 @@
         name: docker
         no_block: yes
 
-    - name: Load necessary modules
-      shell: 'modprobe overlay && modprobe br_netfilter'
-
     - name: Configure iptables to receive bridged network traffic
       copy:
         src: /vagrant/ansible/resources/99-kubernetes-cri.conf
         dest: /etc/sysctl.d/99-kubernetes-cri.conf
-
-    - name: Load system settings
-      shell: 'sysctl --system'
-
-    - name: Install cri-o
-      apt:
-        name:
-          - cri-o-1.15
-        state: present
-        force: yes
-
-    - name: Make sure crio is running
-      systemd:
-        state: started
-        name: crio
-
-    - name: Configure containerd
-      shell: 'containerd config default > /etc/containerd/config.toml'
-
-    - name: Make sure the systemd is cgroup driver
-      lineinfile:
-        path: /etc/containerd/config.toml
-        regexp: 'systemd_cgroup = false'
-        line: 'systemd_cgroup = true'
 
     - name: Upgrade all packages to the latest version
       apt:
@@ -118,8 +91,8 @@
       args:
         warn: False
 
+    # node2 => node2.vm
     - name: Set hostname properly
-      # node2 => node2.vm
       shell: 'hostname "$(hostname | cut -d. -f1)".vm'
 
 - hosts: master
