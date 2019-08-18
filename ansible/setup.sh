@@ -5,3 +5,4 @@ set -o errexit
 
 swapoff -a
 sysctl -w vm.swappiness=0
+apt-get --quiet --yes install linux-headers-$(uname -r) > /dev/null 2>&1 || true

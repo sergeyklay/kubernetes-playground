@@ -9,20 +9,24 @@ Shell and Ansible.
 
 - [VirtualBox](https://virtualbox.org/)
 - [Vagrant](https://vagrantup.com/)
-
+- Vagrant Plugins:
+  - `vagrant-vbguest`
 
 ## Getting started
 
 After having done the adjustments you can startup and provision your
-whole VM environment with a simple
+whole VM environment with a simple:
 
 ```bash
 vagrant up
+vagrant vbguest
+vagrant halt
 ```
 
-After provision go to `bootstrap.vm` host and run ansible provision:
+After initial provision go to `bootstrap.vm` host and run ansible provision:
 
 ```bash
+vagrant up
 vagrant ssh bootstrap.vm
 cd  /vagrant/ansible
 ansible-playbook -i hosts playbook.yml

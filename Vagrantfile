@@ -67,9 +67,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.ssh.forward_agent = true
   config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
 
-  check_guest_additions = false
-  functional_vboxsf = false
-
   boxes.each do |box|
     config.vm.define box[:name] do |machine|
       machine.vm.hostname = (box[:name]).to_s

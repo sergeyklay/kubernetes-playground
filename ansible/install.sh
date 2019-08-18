@@ -8,7 +8,10 @@ export DEBIAN_FRONTEND=noninteractive
 echo "Preliminary installation..."
 
 apt-get update --quiet --yes > /dev/null 2>&1 || true
-apt-get --quiet --yes --fix-missing install python-pip sshpass curl > /dev/null 2>&1 || true
+apt-get --quiet --yes --fix-missing install \
+  sshpass \
+  curl \
+  linux-headers-$(uname -r) > /dev/null 2>&1 || true
 curl -sSL https://bootstrap.pypa.io/get-pip.py | python > /dev/null 2>&1 || true
 pip install --quiet --no-color ansible
 
