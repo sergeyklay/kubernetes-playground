@@ -1,0 +1,147 @@
+---
+- hosts: all
+  become: true
+  vars_files:
+    - vars.yml
+  strategy: free
+
+  tasks:
+    - name: Hack to resolve Problem with MergeList Issue
+      shell: 'find /var/cache/apt/archives /var/lib/apt/lists -not -name lock -type f -delete'
+
+    - name: Update apt cache directly (apt module not reliable)
+      shell: 'apt-get clean && apt-get update'
+      args:
+        warn: False
+
+    - name: Preliminary installation
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - gnupg-agent
+          - software-properties-common
+          - python-apt
+        state: present
+        force: yes
+
+    - name: Add the Google signing key
+      apt_key: url=https://packages.cloud.google.com/apt/doc/apt-key.gpg state=present
+
+    - name: Add Docker's official GPG key
+      apt_key: url=https://download.docker.com/linux/ubuntu/gpg state=present
+
+    - name: Add the k8s APT repository
+      apt_repository: repo='deb http://apt.kubernetes.io/ kubernetes-xenial main' state=present
+
+    - name: Add Docker apt repository
+      apt_repository: repo='deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable' state=present
+
+    - name: Add the projectatomic repo for recent CRI-O version
+      apt_repository: repo='ppa:projectatomic/ppa' state=present
+
+    - name: Install packages
+      apt:
+        name: "{{ packages }}"
+        state: present
+        update_cache: yes
+        force: yes
+
+    - name: Setup docker daemon
+      copy:
+        src: /vagrant/ansible/resources/docker-daemon.json
+        dest: /etc/docker/daemon.json
+
+    - name: Create necessary directories if they don't exist
+      file:
+        path: "{{ item }}"
+        state: directory
+        recurse: yes
+      with_items:
+        - /etc/containerd
+        - /etc/systemd/system/docker.service.d
+
+    - name: Restart service docker
+      systemd:
+        state: restarted
+        daemon_reload: yes
+        name: docker
+        no_block: yes
+
+    - name: Load necessary modules
+      shell: 'modprobe overlay && modprobe br_netfilter'
+
+    - name: Setup required sysctl params for CRI-O
+      copy:
+        src: /vagrant/ansible/resources/99-kubernetes-cri.conf
+        dest: /etc/sysctl.d/99-kubernetes-cri.conf
+
+    - name: Load system settings
+      shell: 'sysctl --system'
+
+    - name: Install cri-o
+      apt:
+        name:
+          - cri-o-1.15
+        state: present
+        force: yes
+
+    - name: Make sure crio is running
+      systemd:
+        state: started
+        name: crio
+
+    - name: Configure containerd
+      shell: 'containerd config default > /etc/containerd/config.toml'
+
+    - name: Make sure the systemd is cgroup driver
+      lineinfile:
+        path: /etc/containerd/config.toml
+        regexp: 'systemd_cgroup = false'
+        line: 'systemd_cgroup = true'
+
+    # I'm not sure we need to restart containerd at this time
+    # because at this time the system anyway will ask for restart
+    - name: Restart service containerd
+      systemd:
+        state: restarted
+        name: containerd
+        no_block: yes
+
+    - name: Upgrade all packages to the latest version
+      apt:
+        name: "*"
+        state: latest
+
+    - name: Remove useless packages from the cache
+      apt:
+        autoclean: yes
+
+    - name: Remove dependencies that are no longer required
+      apt:
+        autoremove: yes
+
+    - name: Disable swap
+      shell: "sed -i '/ swap / s/^/#/' /etc/fstab"
+      args:
+        warn: False
+
+    - name: Set hostname properly
+      # node2 => node2.vm
+      shell: 'hostname "$(hostname | cut -d. -f1)".vm'
+
+- hosts: master
+  become: true
+  strategy: free
+
+  tasks:
+    - name: Create necessary directories if they don't exist
+      file:
+        path: /etc/kubernetes/manifests
+        state: directory
+        recurse: yes
+
+    - name: Create addon-manager pod on master node
+      copy:
+        src: /vagrant/ansible/resources/kube-addon-manager.yaml
+        dest: /etc/kubernetes/manifests/kube-addon-manager.yaml

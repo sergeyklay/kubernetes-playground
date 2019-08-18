@@ -1,0 +1,13 @@
+---
+packages:
+  - containerd.io
+  - curl
+  - docker-ce=18.06.2~ce~3-0~ubuntu
+  - htop
+  - kubeadm
+  - kubectl
+  - kubelet
+  - kubernetes-cni
+  - tmux
+  - socat
+  - vim
