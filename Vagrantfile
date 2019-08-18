@@ -5,7 +5,7 @@
 boxes = [
   {
     name: 'bootstrap.vm',
-    desc: 'Bootstrap machine to provision Kubernetes cluster',
+    desc: 'Bootstrap machine to run provision on Kubernetes cluster',
     ip: '192.168.77.10',
     mem: 512,
     vrde: 'off',
@@ -60,10 +60,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = 'bento/ubuntu-16.04'
   config.vm.box_check_update = false
 
-  # always use Vagrants insecure key
   config.ssh.insert_key = false
-
-  # forward ssh agent to easily ssh into the different machines
   config.ssh.forward_agent = true
   config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
 

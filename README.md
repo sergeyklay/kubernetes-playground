@@ -19,22 +19,16 @@ whole VM environment with a simple:
 
 ```bash
 vagrant up
-vagrant vbguest
-vagrant halt
 ```
 
 After initial provision go to `bootstrap.vm` host and run ansible provision:
 
 ```bash
-vagrant up
 vagrant ssh bootstrap.vm
 cd  /vagrant/ansible
 ansible-playbook -i hosts playbook.yml
-```
 
-Restart VMs
-
-```bash
+# System reboot is required
 vagrant halt
 vagrant up
 ```
@@ -43,7 +37,9 @@ Then setup Kubernetes cluster:
 
 ```bash
 vagrant ssh kubeadm.vm
-sudo kubeadm init --apiserver-advertise-address 192.168.77.11
+sudo kubeadm init \
+  --apiserver-advertise-address 192.168.77.11 \
+  --pod-network-cidr=192.168.0.0/16
 
 # NOTE:
 # At this moment save "token" and "discovery-token-ca-cert-hash"
