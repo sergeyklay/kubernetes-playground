@@ -1,0 +1,6 @@
+# Automatically normalize line endings for all text-based files
+* text eol=lf
+
+Vagrantfile   linguist-language=ruby
+*.cfg         linguist-language=INI
+*.conf        linguist-language=INI
