@@ -83,3 +83,8 @@ sudo kubeadm join 192.168.77.11:6443 --token "token" \
 vagrant ssh kubeadm.vm
 kubectl get pods --all-namespaces
 ```
+
+## Resources
+
+- [CRI-O](https://cri-o.io/)
+- [Kubernetes Container runtimes](https://kubernetes.io/docs/setup/production-environment/container-runtimes/)

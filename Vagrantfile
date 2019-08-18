@@ -3,54 +3,54 @@
 # frozen_string_literal: true
 
 boxes = [
-    {
-        :name => 'bootstrap.vm',
-        :desc => 'Bootstrap machine to provision Kubernetes cluster',
-        :ip   => '192.168.77.10',
-        :mem  => 512,
-        :vrde => 'off',
-        :cpu  => 1,
-        :prsn => {
-            :name => 'Install ansible',
-            :code => 'ansible/install.sh',
-        },
-    },
-    {
-        :name => 'kubeadm.vm',
-        :desc => 'Master node for Kubernetes cluster',
-        :ip   => '192.168.77.11',
-        :mem  => 2000,
-        :vrde => 'off',
-        :cpu  => 2,
-        :prsn => {
-            :name => 'Initial setup',
-            :code => 'ansible/setup.sh',
-        },
-    },
-    {
-        :name => 'node1.vm',
-        :desc => 'A regular node for Kubernetes cluster',
-        :ip   => '192.168.77.12',
-        :mem  => 2000,
-        :vrde => 'off',
-        :cpu  => 2,
-        :prsn => {
-            :name => 'Initial setup',
-            :code => 'ansible/setup.sh',
-        },
-    },
-    {
-        :name => 'node2.vm',
-        :desc => 'A regular node for Kubernetes cluster',
-        :ip   => '192.168.77.13',
-        :mem  => 2000,
-        :vrde => 'off',
-        :cpu  => 2,
-        :prsn => {
-            :name => 'Initial setup',
-            :code => 'ansible/setup.sh',
-        },
+  {
+    name: 'bootstrap.vm',
+    desc: 'Bootstrap machine to provision Kubernetes cluster',
+    ip: '192.168.77.10',
+    mem: 512,
+    vrde: 'off',
+    cpu: 1,
+    prsn: {
+      name: 'Install ansible',
+      code: 'ansible/install.sh'
     }
+  },
+  {
+    name: 'kubeadm.vm',
+    desc: 'Master node for Kubernetes cluster',
+    ip: '192.168.77.11',
+    mem: 2000,
+    vrde: 'off',
+    cpu: 2,
+    prsn: {
+      name: 'Initial setup',
+      code: 'ansible/setup.sh'
+    }
+  },
+  {
+    name: 'node1.vm',
+    desc: 'A regular node for Kubernetes cluster',
+    ip: '192.168.77.12',
+    mem: 2000,
+    vrde: 'off',
+    cpu: 2,
+    prsn: {
+      name: 'Initial setup',
+      code: 'ansible/setup.sh'
+    }
+  },
+  {
+    name: 'node2.vm',
+    desc: 'A regular node for Kubernetes cluster',
+    ip: '192.168.77.13',
+    mem: 2000,
+    vrde: 'off',
+    cpu: 2,
+    prsn: {
+      name: 'Initial setup',
+      code: 'ansible/setup.sh'
+    }
+  }
 ]
 
 VAGRANTFILE_API_VERSION ||= 2
@@ -69,17 +69,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   boxes.each do |box|
     config.vm.define box[:name] do |machine|
-      machine.vm.hostname = "#{box[:name]}"
+      machine.vm.hostname = (box[:name]).to_s
       machine.vm.network :private_network, ip: box[:ip]
 
       machine.vm.provider :virtualbox do |v|
         v.gui = false
 
-        v.customize ['modifyvm', :id, '--name', "#{box[:name]}"]
-        v.customize ['modifyvm', :id, '--description', "#{box[:desc]}"]
+        v.customize ['modifyvm', :id, '--name', (box[:name]).to_s]
+        v.customize ['modifyvm', :id, '--description', (box[:desc]).to_s]
         v.customize ['modifyvm', :id, '--memory', box[:mem]]
         v.customize ['modifyvm', :id, '--cpus', box[:cpu]]
-        v.customize ['modifyvm', :id, '--vrde', "#{box[:vrde]}"]
+        v.customize ['modifyvm', :id, '--vrde', (box[:vrde]).to_s]
       end
 
       machine.vm.provision :shell do |s|
