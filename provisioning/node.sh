@@ -17,3 +17,7 @@ echo "Preliminary installation..."
 
 apt-get --quiet --yes install python-apt > /dev/null 2>&1 || true
 find /var/cache/apt/archives /var/lib/apt/lists -not -name lock -type f -delete
+
+# Bridge filtering
+modprobe br_netfilter
+echo "br_netfilter" > /etc/modules-load.d/br_netfilter.conf
