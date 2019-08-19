@@ -15,7 +15,7 @@ the components below:
 | IP            | Hostname       | Components                               |
 | ------------- | -------------- | ---------------------------------------- |
 | 192.168.77.9  | `bootstrap.vm` | Bootstrap machine to run provision on Kubernetes cluster |
-| 192.168.77.10 | `kubeadm.vm`   | `kube-apiserver`, `kube-controller-manager`, `kube-addon-manager`, `kube-scheduler`, `etcd`, `kubelet`, `kubeadm`, `kubctl`, `docker`, `dashboard`, `weave-net` |
+| 192.168.77.10 | `kubeadm.vm`   | `kube-apiserver`, `kube-controller-manager`, `kube-addon-manager`, `kube-scheduler`, `etcd`, `kubelet`, `kubeadm`, `kubctl`, `docker`, `dashboard`, `calico` |
 | 192.168.77.11 | `worker-1.vm`  | `kubelet`, `kubeadm`, `kubctl`, `docker` |
 | 192.168.77.12 | `worker-2.vm`  | `kubelet`, `kubeadm`, `kubctl`, `docker` |
 
