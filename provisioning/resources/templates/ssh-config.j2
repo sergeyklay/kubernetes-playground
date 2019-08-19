@@ -3,7 +3,7 @@
 Host *
   IdentitiesOnly=yes
 
-{% for host in groups['all'] %}
+{% for host in groups['cluster'] %}
 {% if hostvars[host].ansible_fqdn != ansible_fqdn %}
 Host {{ hostvars[host].ansible_fqdn }}
   Hostname {{ host  }}

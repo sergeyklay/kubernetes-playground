@@ -3,14 +3,15 @@
 # set -e : exit the script if any statement returns a non-true return value
 set -o errexit
 
-echo 'Disable swap...'
-swapoff -a
-sysctl -w vm.swappiness=0
-
 apt-mark hold \
   linux-image-"$(uname -r)" \
   linux-modules-"$(uname -r)" \
   linux-modules-extra-"$(uname -r)" > /dev/null 2>&1 || true
+
+echo 'Disable swap...'
+
+swapoff -a
+sed -i '/ swap / s/^/#/' /etc/fstab
 
 echo "Preliminary installation..."
 

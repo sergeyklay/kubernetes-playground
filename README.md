@@ -14,15 +14,21 @@ the components below:
 
 | IP            | Hostname       | Components                               |
 | ------------- | -------------- | ---------------------------------------- |
-| 192.168.77.10 | `bootstrap.vm` | Bootstrap machine to run provision on Kubernetes cluster |
-| 192.168.77.11 | `kubeadm.vm`   | `kube-apiserver`, `kube-controller-manager`, `kube-addon-manager`, `kube-scheduler`, `etcd`, `kubelet`, `kubeadm`, `kubctl`, `docker`, `dashboard`, `weave-net` |
-| 192.168.77.12 | `worker-1.vm`  | `kubelet`, `kubeadm`, `kubctl`, `docker` |
-| 192.168.77.13 | `worker-2.vm`  | `kubelet`, `kubeadm`, `kubctl`, `docker` |
+| 192.168.77.9  | `bootstrap.vm` | Bootstrap machine to run provision on Kubernetes cluster |
+| 192.168.77.10 | `kubeadm.vm`   | `kube-apiserver`, `kube-controller-manager`, `kube-addon-manager`, `kube-scheduler`, `etcd`, `kubelet`, `kubeadm`, `kubctl`, `docker`, `dashboard`, `weave-net` |
+| 192.168.77.11 | `worker-1.vm`  | `kubelet`, `kubeadm`, `kubctl`, `docker` |
+| 192.168.77.12 | `worker-2.vm`  | `kubelet`, `kubeadm`, `kubctl`, `docker` |
 
 ## Prerequisites
 
 - [VirtualBox](https://virtualbox.org/)
 - [Vagrant](https://vagrantup.com/)
+
+Recommended Vagrant Plugins
+
+- vagrant-vbguest
+- vagrant-hosts
+- vagrant-env
 
 ## Getting started
 
@@ -33,20 +39,20 @@ whole VM environment with a simple:
 vagrant up
 ```
 
-After initial provision go to `bootstrap.vm` host and run ansible provision:
+After initial provision go to `bootstrap` VM and run ansible provision:
 
 ```bash
-vagrant ssh bootstrap.vm
+vagrant ssh bootstrap
 cd /vagrant/provisioning
 ansible-playbook -i hosts playbook.yml
 ```
 
-Then setup Kubernetes cluster:
+Then setup Kubernetes cluster using `kubeadm` VM:
 
 ```bash
-vagrant ssh kubeadm.vm
+vagrant ssh kubeadm
 sudo kubeadm init \
-  --apiserver-advertise-address 192.168.77.11 \
+  --apiserver-advertise-address 192.168.77.10 \
   --pod-network-cidr=192.168.0.0/16
 
 # NOTE:
@@ -58,10 +64,10 @@ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 
-Optionally install CNI plugins:
+Optionally install CNI plugins using `kubeadm` VM:
 
 ```bash
-vagrant ssh kubeadm.vm
+vagrant ssh kubeadm
 
 # Weave Net
 V="$(kubectl version | base64 | tr -d '\n')"
@@ -74,32 +80,26 @@ kubectl apply -f "$D/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml"
 
 Add nodes:
 ```bash
-# use "token" and "discovery token" from previous response at "kubeadm.vm" node
-vagrant ssh worker-1.vm
-sudo kubeadm join 192.168.77.11:6443 --token "token" \
+# use "token" and "discovery token" from previous response at "kubeadm" VM
+vagrant ssh worker-1
+sudo kubeadm join 192.168.77.10:6443 --token "token" \
     --discovery-token-ca-cert-hash "discovery token" \
     --ignore-preflight-errors=all
 ```
 
 ```bash
-# use "token" and "discovery token" from previous response at "kubeadm.vm" node
-vagrant ssh node2.vm
-sudo kubeadm join 192.168.77.11:6443 --token "token" \
+# use "token" and "discovery token" from previous response at "kubeadm" VM
+vagrant ssh worker-2
+sudo kubeadm join 192.168.77.10:6443 --token "token" \
     --discovery-token-ca-cert-hash "discovery token" \
     --ignore-preflight-errors=all
-```
-
-```bash
-# check
-vagrant ssh kubeadm.vm
-kubectl get pods --all-namespaces
 ```
 
 By default, your cluster will not schedule pods on the control-plane node for security reasons.
 If you want to be able to schedule workloads for, run:
 
 ```bash
-vagrant ssh kubeadm.vm
+vagrant ssh kubeadm
 kubectl taint nodes --all node-role.kubernetes.io/master-
 ```
 
@@ -119,13 +119,13 @@ At this point you should have a fully-functional kubernetes cluster on which you
 ## Test the installation:
 
 ```bash
-vagrant ssh kubeadm.vm
+vagrant ssh kubeadm
 
 kubectl cluster-info
 
 # You will  response like this:
-# Kubernetes master is running at https://192.168.77.11:6443
-# KubeDNS is running at https://192.168.77.11:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+# Kubernetes master is running at https://192.168.77.10:6443
+# KubeDNS is running at https://192.168.77.10:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
 #
 # To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 
@@ -134,16 +134,20 @@ kubectl get pods --all-namespaces
 # You will  response like this:
 #
 # NAMESPACE     NAME                                    READY   STATUS    RESTARTS   AGE
-# kube-system   coredns-5c98db65d4-nxjr7                1/1     Running   0          3m27s
-# kube-system   coredns-5c98db65d4-q2h7n                1/1     Running   0          3m27s
-# kube-system   etcd-kubeadm.vm                         1/1     Running   0          2m26s
-# kube-system   kube-addon-manager-kubeadm.vm           1/1     Running   0          3m46s
-# kube-system   kube-apiserver-kubeadm.vm               1/1     Running   0          2m51s
-# kube-system   kube-controller-manager-kubeadm.vm      1/1     Running   0          2m42s
-# kube-system   kube-proxy-6zdss                        1/1     Running   0          3m28s
-# kube-system   kube-scheduler-kubeadm.vm               1/1     Running   0          2m41s
-# kube-system   kubernetes-dashboard-7d75c474bb-77l85   1/1     Running   0          34s
-# kube-system   weave-net-wkbt9                         2/2     Running   0          43s
+# kube-system   coredns-5c98db65d4-vmlt5                1/1     Running   0          6m14s
+# kube-system   coredns-5c98db65d4-z66d5                1/1     Running   0          6m14s
+# kube-system   etcd-kubeadm.vm                         1/1     Running   0          5m31s
+# kube-system   kube-addon-manager-kubeadm.vm           1/1     Running   0          6m33s
+# kube-system   kube-apiserver-kubeadm.vm               1/1     Running   0          5m17s
+# kube-system   kube-controller-manager-kubeadm.vm      1/1     Running   0          5m20s
+# kube-system   kube-proxy-6l9b6                        1/1     Running   0          66s
+# kube-system   kube-proxy-kc7j8                        1/1     Running   0          110s
+# kube-system   kube-proxy-qsqqb                        1/1     Running   0          6m14s
+# kube-system   kube-scheduler-kubeadm.vm               1/1     Running   0          5m36s
+# kube-system   kubernetes-dashboard-7d75c474bb-4pl7l   1/1     Running   0          4m13s
+# kube-system   weave-net-74m69                         2/2     Running   1          110s
+# kube-system   weave-net-qnkm5                         2/2     Running   0          4m20s
+# kube-system   weave-net-vgnj4                         2/2     Running   0          66s
 
 kubectl get nodes
 

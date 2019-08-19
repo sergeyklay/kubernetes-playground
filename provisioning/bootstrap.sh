@@ -27,15 +27,6 @@ touch /home/vagrant/.ssh/authorized_keys
 cat >/home/vagrant/.ssh/config <<EOL
 Host *
   IdentitiesOnly=yes
-
-Host kubeadm.vm
-  Hostname 192.168.77.11
-
-Host worker-1.vm
-  Hostname 192.168.77.12
-
-Host worker-2.vm
-  Hostname 192.168.77.13
 EOL
 chown vagrant:vagrant /home/vagrant/.ssh/*
 chmod go-r /home/vagrant/.ssh/*
@@ -44,10 +35,6 @@ echo "Configure Ansible..."
 
 mkdir -p /etc/ansible
 cp /vagrant/provisioning/resources/ansible.cfg /etc/ansible/ansible.cfg
-
-echo "Set hostname properly..."
-
-hostname "$(hostname | cut -d. -f1)".vm
 
 echo "Cleanup..."
 

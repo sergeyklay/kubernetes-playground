@@ -1,6 +1,28 @@
 ---
 - hosts: all
   become: true
+  strategy: free
+
+  tasks:
+    # worker-2 => worker-2.vm
+    - name: Set hostname properly
+      shell: 'hostname "$(hostname | cut -d. -f1)".vm'
+
+    - name: Set host name resolution
+      template:
+        src: /vagrant/provisioning/resources/templates/hosts.j2
+        dest: /etc/hosts
+
+    - name: Configure SSH access
+      template:
+        src: /vagrant/provisioning/resources/templates/ssh-config.j2
+        dest: /home/vagrant/.ssh/config
+        owner: vagrant
+        group: vagrant
+        mode: '0600'
+
+- hosts: cluster
+  become: true
   vars_files:
     - vars.yml
   strategy: free
@@ -85,28 +107,6 @@
     - name: Remove dependencies that are no longer required
       apt:
         autoremove: yes
-
-    - name: Disable swap
-      shell: "sed -i '/ swap / s/^/#/' /etc/fstab"
-      args:
-        warn: False
-
-    # worker-2 => worker-2.vm
-    - name: Set hostname properly
-      shell: 'hostname "$(hostname | cut -d. -f1)".vm'
-
-    - name: Set host name resolution
-      template:
-        src: /vagrant/provisioning/resources/templates/hosts.j2
-        dest: /etc/hosts
-
-    - name: Configure SSH access
-      template:
-        src: /vagrant/provisioning/resources/templates/ssh-config.j2
-        dest: /home/vagrant/.ssh/config
-        owner: vagrant
-        group: vagrant
-        mode: '0600'
 
 - hosts: master
   become: true
