@@ -6,9 +6,6 @@
   strategy: free
 
   tasks:
-    - name: Cleaning up old APT lists from the cache
-      shell: 'find /var/cache/apt/archives /var/lib/apt/lists -not -name lock -type f -delete'
-
     - name: Preliminary installation
       apt:
         name:
@@ -95,6 +92,11 @@
     # worker-2 => worker-2.vm
     - name: Set hostname properly
       shell: 'hostname "$(hostname | cut -d. -f1)".vm'
+
+    - name: Set host name resolution
+      template:
+        src: /vagrant/provisioning/resources/templates/hosts.j2
+        dest: /etc/hosts
 
 - hosts: master
   become: true
