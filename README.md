@@ -120,6 +120,15 @@ At this point you should have a fully-functional kubernetes cluster on which you
 
 ```bash
 vagrant ssh kubeadm.vm
+
+kubectl cluster-info
+
+# You will  response like this:
+# Kubernetes master is running at https://192.168.77.11:6443
+# KubeDNS is running at https://192.168.77.11:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+#
+# To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+
 kubectl get pods --all-namespaces
 
 # You will  response like this:
