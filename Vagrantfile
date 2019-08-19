@@ -86,7 +86,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     modifyvm(
       master,
-      'master',
+      'kubeadm',
       NODE_MEMORY,
       NODE_CPUS,
       'Master node for Kubernetes cluster'
