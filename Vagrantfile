@@ -67,13 +67,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         s.name = "Initial #{box[:name]} setup ..."
         s.path = box[:shell]
       end
-
-      if box[:name] == 'bootstrap.vm'
-        machine.vm.provision :file do |f|
-          f.source = 'provisioning/resources/ansible.cfg'
-          f.destination = '/etc/ansible/ansible.cfg'
-        end
-      end
     end
   end
 end

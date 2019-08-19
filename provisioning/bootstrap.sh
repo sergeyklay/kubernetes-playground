@@ -16,8 +16,9 @@ apt-get update --quiet --yes > /dev/null 2>&1 || true
 apt-get upgrade --quiet --yes > /dev/null 2>&1 || true
 
 apt-get --quiet --yes --fix-missing install sshpass curl > /dev/null 2>&1 || true
-curl -sSL https://bootstrap.pypa.io/get-pip.py | python > /dev/null 2>&1 || true
+curl -sSL https://bootstrap.pypa.io/get-pip.py | /usr/bin/python3 > /dev/null 2>&1 || true
 pip install --quiet --no-color ansible
+chown -R vagrant:vagrant /home/vagrant/.cache
 
 echo "Configuring ssh..."
 
@@ -29,6 +30,11 @@ Host *
 EOL
 chown vagrant:vagrant /home/vagrant/.ssh/*
 chmod go-r /home/vagrant/.ssh/*
+
+echo "Configure Ansible..."
+
+mkdir -p /etc/ansible
+cp /vagrant/provisioning/resources/ansible.cfg /etc/ansible/ansible.cfg
 
 echo "Set hostname properly..."
 
