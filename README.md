@@ -1,16 +1,16 @@
 # Multihost Virtual Machine Provisioning powered by Vagrant
 
 A skeleton repository that considerably simplifies setting up a
-multihost project with a VirtualBox Virtual Machine development
-environment powered by Vagrant and different provisioners like File,
-Shell and Ansible.
+multi VM Kubernetes cluster with a VirtualBox Virtual Machine development
+environment powered by Vagrant and different provisioners like Shell and
+Ansible.
+
+_This project is designed for local development only._
 
 ## Prerequisites
 
 - [VirtualBox](https://virtualbox.org/)
 - [Vagrant](https://vagrantup.com/)
-- Vagrant Plugins:
-  - `vagrant-vbguest`
 
 ## Getting started
 
@@ -27,10 +27,6 @@ After initial provision go to `bootstrap.vm` host and run ansible provision:
 vagrant ssh bootstrap.vm
 cd  /vagrant/ansible
 ansible-playbook -i hosts playbook.yml
-
-# System reboot is required
-vagrant halt
-vagrant up
 ```
 
 Then setup Kubernetes cluster:
@@ -64,16 +60,10 @@ D="https://raw.githubusercontent.com/kubernetes/dashboard"
 kubectl apply -f "$D/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml"
 ```
 
-Test the installation:
-
-```bash
-kubectl get pods --all-namespaces
-```
-
 Add nodes:
 ```bash
 # use "token" and "discovery token" from previous response at "kubeadm.vm" node
-vagrant ssh node1.vm
+vagrant ssh worker-1.vm
 sudo kubeadm join 192.168.77.11:6443 --token "token" \
     --discovery-token-ca-cert-hash "discovery token" \
     --ignore-preflight-errors=all
@@ -93,7 +83,37 @@ vagrant ssh kubeadm.vm
 kubectl get pods --all-namespaces
 ```
 
-## Resources
+Test the installation:
 
-- [CRI-O](https://cri-o.io/)
-- [Kubernetes Container runtimes](https://kubernetes.io/docs/setup/production-environment/container-runtimes/)
+```bash
+vagrant ssh kubeadm.vm
+kubectl get pods --all-namespaces
+
+# You will  response like this:
+#
+# NAMESPACE     NAME                                    READY   STATUS    RESTARTS   AGE
+# kube-system   coredns-5c98db65d4-nxjr7                1/1     Running   0          3m27s
+# kube-system   coredns-5c98db65d4-q2h7n                1/1     Running   0          3m27s
+# kube-system   etcd-kubeadm.vm                         1/1     Running   0          2m26s
+# kube-system   kube-addon-manager-kubeadm.vm           1/1     Running   0          3m46s
+# kube-system   kube-apiserver-kubeadm.vm               1/1     Running   0          2m51s
+# kube-system   kube-controller-manager-kubeadm.vm      1/1     Running   0          2m42s
+# kube-system   kube-proxy-6zdss                        1/1     Running   0          3m28s
+# kube-system   kube-scheduler-kubeadm.vm               1/1     Running   0          2m41s
+# kube-system   kubernetes-dashboard-7d75c474bb-77l85   1/1     Running   0          34s
+# kube-system   weave-net-wkbt9                         2/2     Running   0          43s
+
+kubectl get nodes
+
+# You will  response like this:
+#
+# NAME          STATUS   ROLES    AGE     VERSION
+# kubeadm.vm    Ready    master   17m     v1.15.2
+# worker-1.vm   Ready    <none>   6m19s   v1.15.2
+# worker-2.vm   Ready    <none>   5m21s   v1.15.2
+```
+
+## License
+
+This project is open source software licensed under the MIT Licence.
+For more see LICENSE.txt file.
