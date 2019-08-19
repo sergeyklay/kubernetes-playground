@@ -1,0 +1,12 @@
+# {{ ansible_managed }}
+
+Host *
+  IdentitiesOnly=yes
+
+{% for host in groups['all'] %}
+{% if hostvars[host].ansible_fqdn != ansible_fqdn %}
+Host {{ hostvars[host].ansible_fqdn }}
+  Hostname {{ host  }}
+
+{% endif %}
+{% endfor  %}

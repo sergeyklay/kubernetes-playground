@@ -4,7 +4,9 @@
 127.0.1.1	{{ ansible_fqdn }}	{{ ansible_hostname }}
 
 {% for host in groups['all'] %}
+{% if hostvars[host].ansible_fqdn != ansible_fqdn %}
 {{ host  }}	{{ hostvars[host].ansible_fqdn }}
+{% endif %}
 {% endfor  %}
 
 # The following lines are desirable for IPv6 capable hosts

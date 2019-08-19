@@ -100,6 +100,14 @@
         src: /vagrant/provisioning/resources/templates/hosts.j2
         dest: /etc/hosts
 
+    - name: Configure SSH access
+      template:
+        src: /vagrant/provisioning/resources/templates/ssh-config.j2
+        dest: /home/vagrant/.ssh/config
+        owner: vagrant
+        group: vagrant
+        mode: '0600'
+
 - hosts: master
   become: true
   strategy: free

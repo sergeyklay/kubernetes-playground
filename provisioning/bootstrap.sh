@@ -27,6 +27,15 @@ touch /home/vagrant/.ssh/authorized_keys
 cat >/home/vagrant/.ssh/config <<EOL
 Host *
   IdentitiesOnly=yes
+
+Host kubeadm.vm
+  Hostname 192.168.77.11
+
+Host worker-1.vm
+  Hostname 192.168.77.12
+
+Host worker-2.vm
+  Hostname 192.168.77.13
 EOL
 chown vagrant:vagrant /home/vagrant/.ssh/*
 chmod go-r /home/vagrant/.ssh/*
