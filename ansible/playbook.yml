@@ -86,7 +86,7 @@
       args:
         warn: False
 
-    # node2 => node2.vm
+    # worker-2 => worker-2.vm
     - name: Set hostname properly
       shell: 'hostname "$(hostname | cut -d. -f1)".vm'
 
