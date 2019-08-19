@@ -73,6 +73,8 @@
         line: "source <(kubectl completion bash)"
         state: present
 
+    # hold docker-ce to use latest know and documented version
+    # and avoid kubernetes warnings
     - name: Upgrade all packages to the latest version
       shell: "apt-mark hold docker-ce && apt-get upgrade --quiet --yes"
 

@@ -12,11 +12,12 @@ _This project is designed for local development only._
 This project allows you to create a Kubernetes cluster with 3 nodes which contains
 the components below:
 
-| IP            | Hostname      | Components                               |
-| ------------- | ------------- | ---------------------------------------- |
-| 192.168.77.11 | `kubeadm.vm`  | `kube-apiserver`, `kube-controller-manager`, `kube-addon-manager`, `kube-scheduler`, `etcd`, `kubelet`, `kubeadm`, `kubctl`, `docker`, `dashboard`, `weave-net` |
-| 192.168.77.12 | `worker-1.vm` | `kubelet`, `kubeadm`, `kubctl`, `docker` |
-| 192.168.77.13 | `worker-2.vm` | `kubelet`, `kubeadm`, `kubctl`, `docker` |
+| IP            | Hostname       | Components                               |
+| ------------- | -------------- | ---------------------------------------- |
+| 192.168.77.10 | `bootstrap.vm` | Bootstrap machine to run provision on Kubernetes cluster |
+| 192.168.77.11 | `kubeadm.vm`   | `kube-apiserver`, `kube-controller-manager`, `kube-addon-manager`, `kube-scheduler`, `etcd`, `kubelet`, `kubeadm`, `kubctl`, `docker`, `dashboard`, `weave-net` |
+| 192.168.77.12 | `worker-1.vm`  | `kubelet`, `kubeadm`, `kubctl`, `docker` |
+| 192.168.77.13 | `worker-2.vm`  | `kubelet`, `kubeadm`, `kubctl`, `docker` |
 
 ## Prerequisites
 
