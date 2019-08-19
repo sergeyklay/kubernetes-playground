@@ -25,6 +25,17 @@ cat /vagrant/ansible/resources/.ansible.cfg > /home/vagrant/.ansible.cfg
 chown vagrant:vagrant /home/vagrant/.ansible.cfg
 chmod go-r /home/vagrant/.ansible.cfg
 
+echo "Configuring ssh..."
+
+mkdir -p /home/vagrant/.ssh
+touch /home/vagrant/.ssh/authorized_keys
+cat >/home/vagrant/.ssh/config <<EOL
+Host *
+  IdentitiesOnly=yes
+EOL
+chown vagrant:vagrant /home/vagrant/.ssh/*
+chmod go-r /home/vagrant/.ssh/*
+
 echo "Set hostname properly..."
 
 hostname "$(hostname | cut -d. -f1)".vm

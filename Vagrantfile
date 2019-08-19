@@ -9,10 +9,7 @@ boxes = [
     ip: '192.168.77.10',
     mem: 512,
     cpu: 1,
-    prsn: {
-      name: 'Install ansible',
-      code: 'ansible/install.sh'
-    }
+    shell: 'ansible/bootstrap.sh'
   },
   {
     name: 'kubeadm.vm',
@@ -20,10 +17,7 @@ boxes = [
     ip: '192.168.77.11',
     mem: 2048,
     cpu: 2,
-    prsn: {
-      name: 'Master setup',
-      code: 'ansible/setup.sh'
-    }
+    shell: 'ansible/node.sh'
   },
   {
     name: 'worker-1.vm',
@@ -31,10 +25,7 @@ boxes = [
     ip: '192.168.77.12',
     mem: 2048,
     cpu: 2,
-    prsn: {
-      name: 'Worker setup',
-      code: 'ansible/setup.sh'
-    }
+    shell: 'ansible/node.sh'
   },
   {
     name: 'worker-2.vm',
@@ -42,10 +33,7 @@ boxes = [
     ip: '192.168.77.13',
     mem: 2048,
     cpu: 2,
-    prsn: {
-      name: 'Worker setup',
-      code: 'ansible/setup.sh'
-    }
+    shell: 'ansible/node.sh'
   }
 ]
 
@@ -76,8 +64,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       end
 
       machine.vm.provision :shell do |s|
-        s.name = box[:prsn][:name]
-        s.path = box[:prsn][:code]
+        s.name = "Initial #{box[:name]} setup ..."
+        s.path = box[:shell]
       end
     end
   end
