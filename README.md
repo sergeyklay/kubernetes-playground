@@ -7,6 +7,17 @@ Ansible.
 
 _This project is designed for local development only._
 
+## Architecture
+
+This project allows you to create a Kubernetes cluster with 3 nodes which contains
+the components below:
+
+| IP            | Hostname      | Components                               |
+| ------------- | ------------- | ---------------------------------------- |
+| 192.168.77.11 | `kubeadm.vm`  | `kube-apiserver`, `kube-controller-manager`, `kube-addon-manager`, `kube-scheduler`, `etcd`, `kubelet`, `kubeadm`, `kubctl`, `docker`, `dashboard`, `weave-net` |
+| 192.168.77.12 | `worker-1.vm` | `kubelet`, `kubeadm`, `kubctl`, `docker` |
+| 192.168.77.13 | `worker-2.vm` | `kubelet`, `kubeadm`, `kubctl`, `docker` |
+
 ## Prerequisites
 
 - [VirtualBox](https://virtualbox.org/)
@@ -25,7 +36,7 @@ After initial provision go to `bootstrap.vm` host and run ansible provision:
 
 ```bash
 vagrant ssh bootstrap.vm
-cd  /vagrant/ansible
+cd /vagrant/provisioning
 ansible-playbook -i hosts playbook.yml
 ```
 
@@ -83,7 +94,28 @@ vagrant ssh kubeadm.vm
 kubectl get pods --all-namespaces
 ```
 
-Test the installation:
+By default, your cluster will not schedule pods on the control-plane node for security reasons.
+If you want to be able to schedule workloads for, run:
+
+```bash
+vagrant ssh kubeadm.vm
+kubectl taint nodes --all node-role.kubernetes.io/master-
+```
+
+With output looking something like:
+
+```
+node/kubeadm.vm untainted
+taint "node-role.kubernetes.io/master:" not found
+taint "node-role.kubernetes.io/master:" not found
+```
+
+This will remove the `node-role.kubernetes.io/master` taint from any nodes that have it,
+including the control-plane node, meaning that the scheduler will then be able to schedule pods everywhere.
+
+At this point you should have a fully-functional kubernetes cluster on which you can run workloads.
+
+## Test the installation:
 
 ```bash
 vagrant ssh kubeadm.vm
