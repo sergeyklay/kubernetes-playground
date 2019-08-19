@@ -19,12 +19,6 @@ apt-get --quiet --yes --fix-missing install sshpass curl > /dev/null 2>&1 || tru
 curl -sSL https://bootstrap.pypa.io/get-pip.py | python > /dev/null 2>&1 || true
 pip install --quiet --no-color ansible
 
-echo "Configuring Ansible..."
-
-cat /vagrant/ansible/resources/.ansible.cfg > /home/vagrant/.ansible.cfg
-chown vagrant:vagrant /home/vagrant/.ansible.cfg
-chmod go-r /home/vagrant/.ansible.cfg
-
 echo "Configuring ssh..."
 
 mkdir -p /home/vagrant/.ssh

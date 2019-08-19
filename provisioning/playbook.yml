@@ -6,7 +6,11 @@
   strategy: free
 
   tasks:
-    - name: Hack to resolve Problem with MergeList Issue
+    - name: OS status
+      debug:
+        msg: "{{ inventory_hostname }}: {{ ansible_distribution }} {{ ansible_distribution_version }} {{ ansible_distribution_release }} {{ ansible_virtualization_type }} {{ ansible_virtualization_role }}"
+
+    - name: Cleaning up old APT lists from the cache
       shell: 'find /var/cache/apt/archives /var/lib/apt/lists -not -name lock -type f -delete'
 
     - name: Preliminary installation
@@ -49,7 +53,7 @@
 
     - name: Setup docker daemon
       copy:
-        src: /vagrant/ansible/resources/docker-daemon.json
+        src: /vagrant/provisioning/resources/docker-daemon.json
         dest: /etc/docker/daemon.json
 
     - name: Create necessary directories if they don't exist
@@ -67,8 +71,14 @@
 
     - name: Configure iptables to receive bridged network traffic
       copy:
-        src: /vagrant/ansible/resources/99-kubernetes-cri.conf
+        src: /vagrant/provisioning/resources/99-kubernetes-cri.conf
         dest: /etc/sysctl.d/99-kubernetes-cri.conf
+
+    - name: Configure Kubectl to autocomplete
+      lineinfile:
+        path: /home/vagrant/.bashrc
+        line: "source <(kubectl completion bash)"
+        state: present
 
     - name: Upgrade all packages to the latest version
       shell: "apt-mark hold docker-ce && apt-get upgrade --quiet --yes"
@@ -103,5 +113,5 @@
 
     - name: Create addon-manager pod on master node
       copy:
-        src: /vagrant/ansible/resources/kube-addon-manager.yaml
+        src: /vagrant/provisioning/resources/kube-addon-manager.yaml
         dest: /etc/kubernetes/manifests/kube-addon-manager.yaml

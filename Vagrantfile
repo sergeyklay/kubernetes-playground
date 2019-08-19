@@ -9,7 +9,7 @@ boxes = [
     ip: '192.168.77.10',
     mem: 512,
     cpu: 1,
-    shell: 'ansible/bootstrap.sh'
+    shell: 'provisioning/bootstrap.sh'
   },
   {
     name: 'kubeadm.vm',
@@ -17,7 +17,7 @@ boxes = [
     ip: '192.168.77.11',
     mem: 2048,
     cpu: 2,
-    shell: 'ansible/node.sh'
+    shell: 'provisioning/node.sh'
   },
   {
     name: 'worker-1.vm',
@@ -25,7 +25,7 @@ boxes = [
     ip: '192.168.77.12',
     mem: 2048,
     cpu: 2,
-    shell: 'ansible/node.sh'
+    shell: 'provisioning/node.sh'
   },
   {
     name: 'worker-2.vm',
@@ -33,7 +33,7 @@ boxes = [
     ip: '192.168.77.13',
     mem: 2048,
     cpu: 2,
-    shell: 'ansible/node.sh'
+    shell: 'provisioning/node.sh'
   }
 ]
 
@@ -66,6 +66,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       machine.vm.provision :shell do |s|
         s.name = "Initial #{box[:name]} setup ..."
         s.path = box[:shell]
+      end
+
+      if box[:name] == 'bootstrap.vm'
+        machine.vm.provision :file do |f|
+          f.source = 'provisioning/resources/ansible.cfg'
+          f.destination = '/etc/ansible/ansible.cfg'
+        end
       end
     end
   end
