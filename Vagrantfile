@@ -14,7 +14,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Manage cluster from the vagrant host:
   #   export EXPOSE_MASTER=true
-  EXPOSE_MASTER = envb('EXPOSE_MASTER', false)
+  EXPOSE_MASTER = envb('EXPOSE_MASTER', true)
 
   # Bind the manager default kubernetes proxy port
   # to the vagrant host:
