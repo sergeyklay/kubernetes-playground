@@ -8,7 +8,6 @@ boxes = [
     desc: 'Bootstrap machine to run provision on Kubernetes cluster',
     ip: '192.168.77.10',
     mem: 512,
-    vrde: 'off',
     cpu: 1,
     prsn: {
       name: 'Install ansible',
@@ -19,35 +18,32 @@ boxes = [
     name: 'kubeadm.vm',
     desc: 'Master node for Kubernetes cluster',
     ip: '192.168.77.11',
-    mem: 2000,
-    vrde: 'off',
+    mem: 2048,
     cpu: 2,
     prsn: {
-      name: 'Initial setup',
+      name: 'Master setup',
       code: 'ansible/setup.sh'
     }
   },
   {
-    name: 'node1.vm',
-    desc: 'A regular node for Kubernetes cluster',
+    name: 'worker-1.vm',
+    desc: 'Worker node for Kubernetes cluster',
     ip: '192.168.77.12',
-    mem: 2000,
-    vrde: 'off',
+    mem: 2048,
     cpu: 2,
     prsn: {
-      name: 'Initial setup',
+      name: 'Worker setup',
       code: 'ansible/setup.sh'
     }
   },
   {
-    name: 'node2.vm',
-    desc: 'A regular node for Kubernetes cluster',
+    name: 'worker-2.vm',
+    desc: 'Worker node for Kubernetes cluster',
     ip: '192.168.77.13',
-    mem: 2000,
-    vrde: 'off',
+    mem: 2048,
     cpu: 2,
     prsn: {
-      name: 'Initial setup',
+      name: 'Worker setup',
       code: 'ansible/setup.sh'
     }
   }
@@ -76,7 +72,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         v.customize ['modifyvm', :id, '--description', (box[:desc]).to_s]
         v.customize ['modifyvm', :id, '--memory', box[:mem]]
         v.customize ['modifyvm', :id, '--cpus', box[:cpu]]
-        v.customize ['modifyvm', :id, '--vrde', (box[:vrde]).to_s]
+        v.customize ['modifyvm', :id, '--vrde', 'off']
       end
 
       machine.vm.provision :shell do |s|
