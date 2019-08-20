@@ -2,17 +2,7 @@
 - hosts: all
   become: true
   strategy: free
-
   tasks:
-    # worker-2 => worker-2.vm
-    - name: Set hostname properly
-      shell: 'hostname "$(hostname | cut -d. -f1)".vm'
-
-    - name: Set host name resolution
-      template:
-        src: /vagrant/provisioning/resources/templates/hosts.j2
-        dest: /etc/hosts
-
     - name: Configure SSH access
       template:
         src: /vagrant/provisioning/resources/templates/ssh-config.j2
@@ -26,7 +16,6 @@
   vars_files:
     - vars.yml
   strategy: free
-
   tasks:
     - name: Preliminary installation
       apt:
@@ -89,12 +78,6 @@
         src: /vagrant/provisioning/resources/99-kubernetes-cri.conf
         dest: /etc/sysctl.d/99-kubernetes-cri.conf
 
-    - name: Configure Kubectl to autocomplete
-      lineinfile:
-        path: /home/vagrant/.bashrc
-        line: "source <(kubectl completion bash)"
-        state: present
-
     # hold docker-ce to use latest know and documented version
     # and avoid kubernetes warnings
     - name: Upgrade all packages to the latest version
@@ -111,7 +94,6 @@
 - hosts: master
   become: true
   strategy: free
-
   tasks:
     - name: Create necessary directories if they don't exist
       file:
@@ -123,6 +105,21 @@
       copy:
         src: /vagrant/provisioning/resources/kube-addon-manager.yaml
         dest: /etc/kubernetes/manifests/kube-addon-manager.yaml
+
+    - name: Install kubectl
+      apt:
+        name:
+          - bash-completion
+          - kubectl
+        update_cache: yes
+        state: present
+        force: yes
+
+    - name: Configure kubectl to autocomplete
+      lineinfile:
+        path: /home/vagrant/.bashrc
+        line: "source <(kubectl completion bash)"
+        state: present
 
     - name: Pulling images required for setting up a Kubernetes cluster
       shell: "kubeadm config images pull"
