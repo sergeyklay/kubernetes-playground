@@ -1,11 +1,39 @@
 ---
-- hosts: all
-  become: true
-  strategy: free
+- name: Ansible host
+  hosts: ctl
+  connection: local
   tasks:
     - name: Configure SSH access
       template:
-        src: /vagrant/provisioning/resources/templates/ssh-config.j2
+        src: "{{ playbook_dir }}/templates/ssh-config.j2"
+        dest: /home/vagrant/.ssh/config
+        owner: vagrant
+        group: vagrant
+        mode: '0600'
+
+- hosts: all
+  become: true
+  strategy: free
+  gather_facts: yes
+  tasks:
+    - name: Prevent kernel from being upgraded
+      dpkg_selections:
+        name: "{{ item }}"
+        selection: hold
+      with_items:
+        - "linux-image-{{ ansible_kernel }}"
+        - "linux-modules-{{ ansible_kernel }}"
+        - "linux-modules-extra-{{ ansible_kernel }}"
+      tags: apt
+
+    - name: Set host name resolution
+      template:
+        src: "{{ playbook_dir }}/templates/hosts.j2"
+        dest: /etc/hosts
+
+    - name: Configure SSH access
+      template:
+        src: "{{ playbook_dir }}/templates/ssh-config.j2"
         dest: /home/vagrant/.ssh/config
         owner: vagrant
         group: vagrant
@@ -13,10 +41,15 @@
 
 - hosts: cluster
   become: true
-  vars_files:
-    - vars.yml
   strategy: free
   tasks:
+    - name: Remove apt lock file
+      file:
+        state: absent
+        path: "/var/lib/dpkg/lock-frontend"
+      become: true
+      tags: apt
+
     - name: Preliminary installation
       apt:
         name:
@@ -28,36 +61,50 @@
         update_cache: yes
         state: present
         force: yes
+      tags: apt
 
     - name: Add the Google signing key
       apt_key:
         url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
         state: present
+      tags: apt
 
     - name: Add Docker's official GPG key
       apt_key:
         url: https://download.docker.com/linux/ubuntu/gpg
         state: present
+      tags: apt
 
     - name: Add the k8s APT repository
       apt_repository:
         repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
         state: present
+      tags: apt
 
     - name: Add Docker apt repository
       apt_repository:
         repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable
         state: present
+      tags: apt
 
     - name: Install packages
       apt:
-        name: "{{ packages }}"
+        name:
+          - "docker-ce=18.06.2~ce~3-0~ubuntu"
+          - ebtables
+          - ethtool
+          - kubeadm
+          - kubelet
+          - kubernetes-cni
+          - socat
+          - vim
         state: present
         force: yes
+      tags: apt
 
     - name: Setup docker daemon
-      copy:
-        src: /vagrant/provisioning/resources/docker-daemon.json
+      template:
+        src: "{{ playbook_dir }}/templates/docker-daemon.json"
         dest: /etc/docker/daemon.json
 
     - name: Create necessary directories if they don't exist
@@ -74,22 +121,25 @@
         no_block: yes
 
     - name: Configure iptables to receive bridged network traffic
-      copy:
-        src: /vagrant/provisioning/resources/99-kubernetes-cri.conf
+      template:
+        src: "{{ playbook_dir }}/templates/kubernetes-cri.conf"
         dest: /etc/sysctl.d/99-kubernetes-cri.conf
 
     # hold docker-ce to use latest know and documented version
     # and avoid kubernetes warnings
     - name: Upgrade all packages to the latest version
       shell: "apt-mark hold docker-ce && apt-get upgrade --quiet --yes"
+      tags: apt
 
     - name: Remove useless packages from the cache
       apt:
         autoclean: yes
+      tags: apt
 
     - name: Remove dependencies that are no longer required
       apt:
         autoremove: yes
+      tags: apt
 
 - hosts: master
   become: true
@@ -102,9 +152,16 @@
         recurse: yes
 
     - name: Create addon-manager pod on master node
-      copy:
-        src: /vagrant/provisioning/resources/kube-addon-manager.yaml
+      template:
+        src: "{{ playbook_dir }}/templates/addon-manager.yml"
         dest: /etc/kubernetes/manifests/kube-addon-manager.yaml
+
+    - name: Remove apt lock file
+      file:
+        state: absent
+        path: "/var/lib/dpkg/lock-frontend"
+      become: true
+      tags: apt
 
     - name: Install kubectl
       apt:
@@ -114,6 +171,7 @@
         update_cache: yes
         state: present
         force: yes
+      tags: apt
 
     - name: Configure kubectl to autocomplete
       lineinfile:
