@@ -125,6 +125,14 @@
         src: "{{ playbook_dir }}/templates/kubernetes-cri.conf"
         dest: /etc/sysctl.d/99-kubernetes-cri.conf
 
+    - name: Load bridge-netfilter module
+      shell: modprobe br_netfilter
+
+    - name: Setup bridge-netfilter module
+      template:
+        src: "{{ playbook_dir }}/templates/br_netfilter.conf"
+        dest: /etc/modules-load.d/br_netfilter.conf
+
     # hold docker-ce to use latest know and documented version
     # and avoid kubernetes warnings
     - name: Upgrade all packages to the latest version
@@ -140,6 +148,16 @@
       apt:
         autoremove: yes
       tags: apt
+
+    - name: Disable swap for current session
+      shell: swapoff -a
+
+    - name: Disable swap permanently
+      replace:
+        path: /etc/fstab
+        regexp: '^(\s*)([^#\n]+\s+)(\w+\s+)swap(\s+.*)$'
+        replace: '#\1\2\3swap\4'
+        backup: yes
 
 - hosts: master
   become: true
