@@ -14,15 +14,15 @@ the components below:
 
 | IP            | Hostname       | Components                               |
 | ------------- | -------------- | ---------------------------------------- |
-| 192.168.77.9  | `bootstrap.vm` | Bootstrap machine to run provision on Kubernetes cluster |
-| 192.168.77.10 | `kubeadm.vm`   | `kube-apiserver`, `kube-controller-manager`, `kube-addon-manager`, `kube-scheduler`, `etcd`, `kubelet`, `kubeadm`, `kubctl`, `docker`, `dashboard`, `calico` |
-| 192.168.77.11 | `worker-1.vm`  | `kubelet`, `kubeadm`, `kubctl`, `docker` |
-| 192.168.77.12 | `worker-2.vm`  | `kubelet`, `kubeadm`, `kubctl`, `docker` |
+| 192.168.77.9  | `bootstrap.kp.vm` | Bootstrap machine to run provision on Kubernetes cluster |
+| 192.168.77.10 | `master.kp.vm`   | `kube-apiserver`, `kube-controller-manager`, `kube-addon-manager`, `kube-scheduler`, `etcd`, `kubelet`, `kubeadm`, `kubctl`, `docker-ce`, `dashboard`, `calico` |
+| 192.168.77.11 | `worker1.kp.vm`  | `kubelet`, `kubeadm`, `docker-ce` |
+| 192.168.77.12 | `worker2.kp.vm`  | `kubelet`, `kubeadm`, `docker-ce` |
 
 ## Prerequisites
 
-- [VirtualBox](https://virtualbox.org/)
-- [Vagrant](https://vagrantup.com/)
+- [VirtualBox](https://virtualbox.org/) >= 5.2
+- [Vagrant](https://vagrantup.com/) >= 2.2
 
 Recommended Vagrant Plugins
 
@@ -48,10 +48,10 @@ cd /vagrant/provisioning
 ansible-playbook -i hosts playbook.yml
 ```
 
-Then setup Kubernetes cluster using `kubeadm` VM:
+Then setup Kubernetes cluster using `master` VM:
 
 ```shell script
-vagrant ssh kubeadm
+vagrant ssh master
 sudo kubeadm init \
   --apiserver-advertise-address 192.168.77.10 \
   --pod-network-cidr=192.168.0.0/16
@@ -65,10 +65,10 @@ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 
-Optionally install CNI plugins using `kubeadm` VM:
+Optionally install CNI plugins using `master` VM:
 
 ```shell script
-vagrant ssh kubeadm
+vagrant ssh master
 
 # Installing a pod network add-on
 kubectl apply -f https://docs.projectcalico.org/v3.8/manifests/calico.yaml
@@ -84,14 +84,14 @@ By default, your cluster will not schedule pods on the control-plane node for se
 To be able schedule workloads, run:
 
 ```shell script
-vagrant ssh kubeadm
+vagrant ssh master
 kubectl taint nodes --all node-role.kubernetes.io/master-
 ```
 
 This will With output looking something like:
 
 ```
-node/kubeadm.vm untainted
+node/master untainted
 taint "node-role.kubernetes.io/master:" not found
 taint "node-role.kubernetes.io/master:" not found
 ```
@@ -103,7 +103,7 @@ including the control-plane node, meaning that the scheduler will then be able t
 ## Joining your nodes
 
 The nodes are where your workloads (containers and pods, etc) run.
-To add new nodes to your cluster do the following for each VM (`worker-1`, `worker-2`, etc):
+To add new nodes to your cluster do the following for each VM (`worker1.kp.vm`, `worker2.kp.vm`, etc):
 
 ```shell script
 # use "token" and "discovery token" from previous response at "kubeadm" VM
@@ -115,7 +115,7 @@ sudo kubeadm join 192.168.77.10:6443 --token "token" \
 ## Test the installation:
 
 ```shell script
-vagrant ssh kubeadm
+vagrant ssh master
 
 kubectl cluster-info
 
@@ -130,30 +130,30 @@ kubectl get pods --all-namespaces
 # You will see response like this:
 #
 # NAMESPACE     NAME                                       READY   STATUS    RESTARTS   AGE
-# kube-system   calico-kube-controllers-65b8787765-m27hw   1/1     Running   0          7m7s
-# kube-system   calico-node-6lnnz                          1/1     Running   0          3m21s
-# kube-system   calico-node-l6bsn                          1/1     Running   0          7m7s
-# kube-system   calico-node-zbpp6                          1/1     Running   0          4m5s
-# kube-system   coredns-5c98db65d4-g5gfd                   1/1     Running   0          13m
-# kube-system   coredns-5c98db65d4-rvmhw                   1/1     Running   0          13m
-# kube-system   etcd-kubeadm.vm                            1/1     Running   0          12m
-# kube-system   kube-addon-manager-kubeadm.vm              1/1     Running   0          13m
-# kube-system   kube-apiserver-kubeadm.vm                  1/1     Running   0          12m
-# kube-system   kube-controller-manager-kubeadm.vm         1/1     Running   0          12m
-# kube-system   kube-proxy-4lb8w                           1/1     Running   0          4m5s
-# kube-system   kube-proxy-4sjfh                           1/1     Running   0          13m
-# kube-system   kube-proxy-ptbcx                           1/1     Running   0          3m21s
-# kube-system   kube-scheduler-kubeadm.vm                  1/1     Running   0          12m
-# kube-system   kubernetes-dashboard-7d75c474bb-sxqdv      1/1     Running   0          6m53s
+# kube-system   calico-kube-controllers-65b8787765-lvn9s   1/1     Running   0          3m42s
+# kube-system   calico-node-5qb6d                          0/1     Running   0          27s
+# kube-system   calico-node-jfhfn                          1/1     Running   0          57s
+# kube-system   calico-node-tvrtv                          1/1     Running   0          3m42s
+# kube-system   coredns-5c98db65d4-5jq5s                   1/1     Running   0          5m59s
+# kube-system   coredns-5c98db65d4-l5cnf                   1/1     Running   0          5m59s
+# kube-system   etcd-master                                1/1     Running   0          5m13s
+# kube-system   kube-addon-manager-master                  1/1     Running   0          6m17s
+# kube-system   kube-apiserver-master                      1/1     Running   0          5m18s
+# kube-system   kube-controller-manager-master             1/1     Running   0          4m52s
+# kube-system   kube-proxy-95g9n                           1/1     Running   0          5m58s
+# kube-system   kube-proxy-bghgg                           1/1     Running   0          27s
+# kube-system   kube-proxy-hgcxb                           1/1     Running   0          57s
+# kube-system   kube-scheduler-master                      1/1     Running   0          4m52s
+# kube-system   kubernetes-dashboard-7d75c474bb-6b2sn      1/1     Running   0          3m32s
 
 kubectl get nodes
 
 # You will see response like this:
 #
 # NAME          STATUS   ROLES    AGE     VERSION
-# kubeadm.vm    Ready    master   17m     v1.15.2
-# worker-1.vm   Ready    <none>   6m19s   v1.15.2
-# worker-2.vm   Ready    <none>   5m21s   v1.15.2
+# master    Ready    master   6m47s   v1.15.3
+# worker1   Ready    <none>   86s     v1.15.3
+# worker2   Ready    <none>   56s     v1.15.3
 
 kubectl get services --all-namespaces
 
@@ -168,12 +168,14 @@ kubectl get services --all-namespaces
 At this point you should have a fully-functional kubernetes cluster on which you can run workloads.
 
 If you want to connect to the API Server from outside the cluster (e.g. your local workstation)
-you must create a secure channel to your Kubernetes cluster:
+you must create a secure channel to your Kubernetes cluster using
+[kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/):
 
 ```shell script
+mkdir -p $HOME/.kube
 # To use "vagrant scp" install vagrant-scp plugin
-vagrant scp kubeadm:/home/vagrant/.kube/config ./admin.conf
-kubectl --kubeconfig ./admin.conf proxy --port=8002 --accept-hosts='^*$'
+vagrant scp master:/home/vagrant/.kube/config $HOME/.kube/config
+kubectl proxy --port=8002 --accept-hosts='^*$'
 ```
 
 Now access Dashboard at:

@@ -10,7 +10,7 @@ VAGRANTFILE_API_VERSION ||= 2
 # Define constants
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Use vagrant-env plugin if available
-  config.env.load('.env.local', '.env') if plugin?('vagrant-env')
+  config.env.load('.env', '.env.dist') if plugin?('vagrant-env')
 
   # Manage cluster from the vagrant host:
   #   export EXPOSE_MASTER=true
@@ -46,6 +46,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Common provider-specific configuration
   config.vm.provider :virtualbox do |v|
     v.gui = false
+    v.memory = NODE_MEMORY
+    v.cpus = NODE_CPUS
     v.customize ['modifyvm', :id, '--vrde', 'off']
   end
 end
@@ -53,17 +55,15 @@ end
 # Bootstrap VM
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define 'bootstrap' do |bootstrap|
-    bootstrap.vm.hostname = 'bootstrap.vm'
+    bootstrap.vm.hostname = 'bootstrap.kp.vm'
     bootstrap.vm.network :private_network, ip: '192.168.77.9'
-    sync_hosts(bootstrap)
+    bootstrap.vm.provision :hosts, sync_hosts: true if plugin?('vagrant-hosts')
 
-    modifyvm(
-      bootstrap,
-      'bootstrap',
-      512,
-      1,
-      'Bootstrap machine to run provision on Kubernetes cluster'
-    )
+    bootstrap.vm.provider :virtualbox do |v|
+      v.memory = 384
+      v.cpus = 1
+      v.customize ['modifyvm', :id, '--name', 'bootstrap']
+    end
 
     bootstrap.vm.provision :shell do |s|
       s.path = 'provisioning/bootstrap.sh'
@@ -73,10 +73,10 @@ end
 
 # Master node
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.define 'kubeadm', primary: true do |master|
-    master.vm.hostname = 'kubeadm.vm'
+  config.vm.define 'master', primary: true do |master|
+    master.vm.hostname = 'master.kp.vm'
     master.vm.network :private_network, ip: '192.168.77.10'
-    sync_hosts(master)
+    master.vm.provision :hosts, sync_hosts: true if plugin?('vagrant-hosts')
 
     # Bind kubernetes admin port so we can administrate from host
     master.vm.network :forwarded_port, guest: 6443, host: 6443 if EXPOSE_MASTER
@@ -84,13 +84,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # Bind kubernetes default proxy port
     master.vm.network :forwarded_port, guest: 8001, host: 8001 if EXPOSE_PROXY
 
-    modifyvm(
-      master,
-      'kubeadm',
-      NODE_MEMORY,
-      NODE_CPUS,
-      'Master node for Kubernetes cluster'
-    )
+    master.vm.provider :virtualbox do |v|
+      v.customize ['modifyvm', :id, '--name', 'master']
+    end
 
     master.vm.provision :shell do |s|
       s.path = 'provisioning/node.sh'
@@ -101,18 +97,14 @@ end
 # Worker nodes
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   (1..NODE_WORKERS).each do |i|
-    config.vm.define "worker-#{i}" do |worker|
-      worker.vm.hostname = "worker-#{i}.vm"
+    config.vm.define "worker#{i}" do |worker|
+      worker.vm.hostname = "worker#{i}.kp.vm"
       worker.vm.network :private_network, ip: '192.168.77.' + (10 + i).to_s
       worker.vm.provision :hosts, sync_hosts: true if plugin?('vagrant-hosts')
 
-      modifyvm(
-        worker,
-        "worker-#{i}",
-        NODE_MEMORY,
-        NODE_CPUS,
-        'Worker node for Kubernetes cluster'
-      )
+      worker.vm.provider :virtualbox do |v|
+        v.customize ['modifyvm', :id, '--name', "worker#{i}"]
+      end
 
       worker.vm.provision :shell do |s|
         s.path = 'provisioning/node.sh'
