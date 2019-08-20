@@ -14,12 +14,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Manage cluster from the vagrant host:
   #   export EXPOSE_MASTER=true
-  EXPOSE_MASTER = envb('EXPOSE_MASTER', true)
+  EXPOSE_MASTER = envb('EXPOSE_MASTER', false)
 
   # Bind the manager default kubernetes proxy port
   # to the vagrant host:
   #   export EXPOSE_PROXY=true
-  EXPOSE_PROXY = envb('EXPOSE_PROXY', true)
+  EXPOSE_PROXY = envb('EXPOSE_PROXY', false)
 
   # Memory for the cluster's VMs:
   #   export NODE_MEMORY=2048
