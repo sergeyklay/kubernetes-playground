@@ -12,12 +12,12 @@ _This project is designed for local development only._
 This project allows you to create a Kubernetes cluster with 3 nodes which contains
 the components below:
 
-| IP            | Hostname       | Components                               |
-| ------------- | -------------- | ---------------------------------------- |
-| 192.168.77.9  | `bootstrap.kp.vm` | Bootstrap machine to run provision on Kubernetes cluster |
-| 192.168.77.10 | `master.kp.vm`   | `kube-apiserver`, `kube-controller-manager`, `kube-addon-manager`, `kube-scheduler`, `etcd`, `kubelet`, `kubeadm`, `kubctl`, `docker-ce`, `dashboard`, `calico` |
-| 192.168.77.11 | `worker1.kp.vm`  | `kubelet`, `kubeadm`, `docker-ce` |
-| 192.168.77.12 | `worker2.kp.vm`  | `kubelet`, `kubeadm`, `docker-ce` |
+| IP            | Hostname        | Components                               |
+| ------------- | --------------- | ---------------------------------------- |
+| 192.168.77.9  | `ctl.kp.vm`     | Ansible Controller to run provision on Kubernetes cluster |
+| 192.168.77.10 | `master.kp.vm`  | `kube-apiserver`, `kube-controller-manager`, `kube-addon-manager`, `kube-scheduler`, `etcd`, `kubelet`, `kubeadm`, `kubctl`, `docker-ce`, `dashboard`, `calico` |
+| 192.168.77.11 | `worker1.kp.vm` | `kubelet`, `kubeadm`, `docker-ce` |
+| 192.168.77.12 | `worker2.kp.vm` | `kubelet`, `kubeadm`, `docker-ce` |
 
 ## Prerequisites
 
@@ -27,7 +27,6 @@ the components below:
 Recommended Vagrant Plugins
 
 - vagrant-vbguest
-- vagrant-hosts
 - vagrant-env
 - vagrant-scp
 
@@ -40,15 +39,7 @@ whole VM environment with a simple:
 vagrant up
 ```
 
-After initial provision go to `bootstrap` VM and run ansible provision:
-
-```shell script
-vagrant ssh bootstrap
-cd /vagrant/provisioning
-ansible-playbook -i hosts playbook.yml
-```
-
-Then setup Kubernetes cluster using `master` VM:
+After initial setup bootstrap Kubernetes control-plane (master) node:
 
 ```shell script
 vagrant ssh master
@@ -65,7 +56,7 @@ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 
-Optionally install CNI plugins using `master` VM:
+Optionally install CNI plugins at control-plane node:
 
 ```shell script
 vagrant ssh master
