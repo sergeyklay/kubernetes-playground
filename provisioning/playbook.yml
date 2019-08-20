@@ -123,3 +123,6 @@
       copy:
         src: /vagrant/provisioning/resources/kube-addon-manager.yaml
         dest: /etc/kubernetes/manifests/kube-addon-manager.yaml
+
+    - name: Pulling images required for setting up a Kubernetes cluster
+      shell: "kubeadm config images pull"
