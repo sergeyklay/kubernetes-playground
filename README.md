@@ -9,15 +9,16 @@ _This project is designed for local development only._
 
 ## Architecture
 
-This project allows you to create a Kubernetes cluster with 3 nodes which contains
-the components below:
+This project allows you to create a Kubernetes cluster with control-plane node (which controls the cluster),
+and two (by default) worker nodes (where your workloads, like Pods and Deployments run).
+Components used by default are provided below:
 
-| IP            | Hostname        | Components                               |
-| ------------- | --------------- | ---------------------------------------- |
+| IP            | Hostname        | Components                                                |
+| ------------- | --------------- | --------------------------------------------------------- |
 | 192.168.77.9  | `ctl.kp.vm`     | Ansible Controller to run provision on Kubernetes cluster |
 | 192.168.77.10 | `master.kp.vm`  | `kube-apiserver`, `kube-controller-manager`, `kube-addon-manager`, `kube-scheduler`, `etcd`, `kubelet`, `kubeadm`, `kubctl`, `docker-ce`, `dashboard`, `calico` |
-| 192.168.77.11 | `worker1.kp.vm` | `kubelet`, `kubeadm`, `docker-ce` |
-| 192.168.77.12 | `worker2.kp.vm` | `kubelet`, `kubeadm`, `docker-ce` |
+| 192.168.77.11 | `worker1.kp.vm` | `kubelet`, `kubeadm`, `docker-ce`                         |
+| 192.168.77.12 | `worker2.kp.vm` | `kubelet`, `kubeadm`, `docker-ce`                         |
 
 ## Prerequisites
 
@@ -39,7 +40,7 @@ whole VM environment with a simple:
 vagrant up
 ```
 
-After initial setup bootstrap Kubernetes control-plane (master) node:
+Then bootstrap Kubernetes control-plane node (master):
 
 ```shell script
 vagrant ssh master
@@ -56,11 +57,9 @@ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 
-Optionally install CNI plugins at control-plane node:
+Optionally install CNI plugins at control-plane node (master):
 
 ```shell script
-vagrant ssh master
-
 # Installing a pod network add-on
 kubectl apply -f https://docs.projectcalico.org/v3.8/manifests/calico.yaml
 
@@ -90,6 +89,17 @@ taint "node-role.kubernetes.io/master:" not found
 This will remove the `node-role.kubernetes.io/master` taint from any nodes that have it,
 including the control-plane node, meaning that the scheduler will then be able to schedule pods everywhere.
 
+## Configure `kubectl`
+
+To use [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) at your local workstation
+run commands as follows:
+
+```shell script
+mkdir -p $HOME/.kube
+
+# To use "vagrant scp" install vagrant-scp plugin
+vagrant scp master:/home/vagrant/.kube/config $HOME/.kube/config
+```
 
 ## Joining your nodes
 
@@ -103,14 +113,13 @@ sudo kubeadm join 192.168.77.10:6443 --token "token" \
     --ignore-preflight-errors=all
 ```
 
-## Test the installation:
+## Test the installation
 
 ```shell script
-vagrant ssh master
-
 kubectl cluster-info
 
 # You will  response like this:
+#
 # Kubernetes master is running at https://192.168.77.10:6443
 # KubeDNS is running at https://192.168.77.10:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
 #
@@ -158,21 +167,19 @@ kubectl get services --all-namespaces
 
 At this point you should have a fully-functional kubernetes cluster on which you can run workloads.
 
+## Run Dashboard
+
 If you want to connect to the API Server from outside the cluster (e.g. your local workstation)
-you must create a secure channel to your Kubernetes cluster using
-[kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/):
+you must create a secure channel to your Kubernetes cluster using `kubectl`:
 
 ```shell script
-mkdir -p $HOME/.kube
-# To use "vagrant scp" install vagrant-scp plugin
-vagrant scp master:/home/vagrant/.kube/config $HOME/.kube/config
-kubectl proxy --port=8002 --accept-hosts='^*$'
+kubectl proxy --accept-hosts='^*$'
 ```
 
 Now access Dashboard at:
 
-[`http://localhost:8002/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/`](
-http://localhost:8002/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/).
+[`http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/`](
+http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/).
 
 ## License
 
