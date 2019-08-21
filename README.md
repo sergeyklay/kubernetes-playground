@@ -80,26 +80,6 @@ mkdir -p $HOME/.kube
 vagrant scp master:/home/vagrant/.kube/config $HOME/.kube/config
 ```
 
-## Control plane node isolation
-
-By default, your cluster will not schedule pods on the control-plane node for security reasons.
-To be able schedule workloads, run:
-
-```shell script
-kubectl taint nodes --all node-role.kubernetes.io/master-
-```
-
-This will With output looking something like:
-
-```
-node/master untainted
-taint "node-role.kubernetes.io/master:" not found
-taint "node-role.kubernetes.io/master:" not found
-```
-
-This will remove the `node-role.kubernetes.io/master` taint from any nodes that have it,
-including the control-plane node, meaning that the scheduler will then be able to schedule pods everywhere.
-
 ## Joining your nodes
 
 The nodes are where your workloads (containers and pods, etc) run.
