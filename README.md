@@ -68,13 +68,24 @@ RAW="https://raw.githubusercontent.com"
 kubectl apply -f "$RAW/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml"
 ```
 
+## Configure `kubectl`
+
+To use [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) at your local workstation
+run commands as follows:
+
+```shell script
+mkdir -p $HOME/.kube
+
+# To use "vagrant scp" install vagrant-scp plugin
+vagrant scp master:/home/vagrant/.kube/config $HOME/.kube/config
+```
+
 ## Control plane node isolation
 
 By default, your cluster will not schedule pods on the control-plane node for security reasons.
 To be able schedule workloads, run:
 
 ```shell script
-vagrant ssh master
 kubectl taint nodes --all node-role.kubernetes.io/master-
 ```
 
@@ -88,18 +99,6 @@ taint "node-role.kubernetes.io/master:" not found
 
 This will remove the `node-role.kubernetes.io/master` taint from any nodes that have it,
 including the control-plane node, meaning that the scheduler will then be able to schedule pods everywhere.
-
-## Configure `kubectl`
-
-To use [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) at your local workstation
-run commands as follows:
-
-```shell script
-mkdir -p $HOME/.kube
-
-# To use "vagrant scp" install vagrant-scp plugin
-vagrant scp master:/home/vagrant/.kube/config $HOME/.kube/config
-```
 
 ## Joining your nodes
 
@@ -165,7 +164,7 @@ kubectl get services --all-namespaces
 # kube-system   kubernetes-dashboard   ClusterIP   10.102.203.67   <none>        443/TCP                  19m
 ```
 
-At this point you should have a fully-functional kubernetes cluster on which you can run workloads.
+At this point you should have a fully-functional Kubernetes cluster on which you can run workloads.
 
 ## Run Dashboard
 
