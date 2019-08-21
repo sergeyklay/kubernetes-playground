@@ -105,7 +105,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       ansible.become         = true
       ansible.limit          = 'all'
       ansible.playbook       = 'provisioning/playbook.yml'
-      ansible.config_file    = 'provisioning/ansible.cfg'
       ansible.inventory_path = 'provisioning/hosts.yml'
     end
   end
