@@ -4,4 +4,4 @@
 #
 # Generated at: {{ ansible_date_time.iso8601 }}
 
-br_netfilter
+KUBELET_EXTRA_ARGS="--node-ip={{ ansible_host }}"

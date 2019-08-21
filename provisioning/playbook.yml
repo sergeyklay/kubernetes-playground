@@ -110,6 +110,18 @@
         force: yes
       tags: apt
 
+    - name: Setup kubelet daemon
+      template:
+        src: "{{ playbook_dir }}/templates/kubelet"
+        dest: /etc/default/kubelet
+
+    - name: Restart service kubelet
+      systemd:
+        state: restarted
+        daemon_reload: yes
+        name: kubelet
+        no_block: yes
+
     - name: Setup docker daemon
       template:
         src: "{{ playbook_dir }}/templates/docker-daemon.json"

@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Collect resulting artifacts during the creating cluster at the common place
 
+### Fixed
+- Correct kubelet configuration for the cluster nodes
+
 ## [1.3.0] - 2019-08-20
 ### Changed
 - Changed default `EXPOSE_MASTER` and `EXPOSE_PROXY` values
