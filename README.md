@@ -40,34 +40,6 @@ whole VM environment with a simple:
 vagrant up
 ```
 
-Then bootstrap Kubernetes control-plane node (master):
-
-```shell script
-vagrant ssh master
-sudo kubeadm init \
-  --apiserver-advertise-address 192.168.77.10 \
-  --pod-network-cidr=192.168.0.0/16
-
-# NOTE:
-# At this moment save "token" and "discovery-token-ca-cert-hash"
-# from response
-
-mkdir -p $HOME/.kube
-sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-sudo chown $(id -u):$(id -g) $HOME/.kube/config
-```
-
-Optionally install CNI plugins at control-plane node (master):
-
-```shell script
-# Installing a pod network add-on
-kubectl apply -f https://docs.projectcalico.org/v3.8/manifests/calico.yaml
-
-# Dashboard
-RAW="https://raw.githubusercontent.com"
-kubectl apply -f "$RAW/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml"
-```
-
 ## Configure `kubectl`
 
 To use [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) at your local workstation
@@ -78,18 +50,6 @@ mkdir -p $HOME/.kube
 
 # To use "vagrant scp" install vagrant-scp plugin
 vagrant scp master:/home/vagrant/.kube/config $HOME/.kube/config
-```
-
-## Joining your nodes
-
-The nodes are where your workloads (containers and pods, etc) run.
-To add new nodes to your cluster do the following for each VM (`worker1.kp.vm`, `worker2.kp.vm`, etc):
-
-```shell script
-# use "token" and "discovery token" from previous response at "kubeadm" VM
-sudo kubeadm join 192.168.77.10:6443 --token "token" \
-    --discovery-token-ca-cert-hash "discovery token" \
-    --ignore-preflight-errors=all
 ```
 
 ## Test the installation
