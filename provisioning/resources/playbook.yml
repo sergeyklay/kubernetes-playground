@@ -39,6 +39,12 @@
         group: vagrant
         mode: '0600'
 
+    - name: Adding vagrant user to group systemd-journal
+      user:
+        name: vagrant
+        groups: systemd-journal
+        append: yes
+
 - hosts: cluster
   become: true
   strategy: free
@@ -90,6 +96,7 @@
     - name: Install packages
       apt:
         name:
+          - bash-completion
           - "docker-ce=18.06.2~ce~3-0~ubuntu"
           - ebtables
           - ethtool
@@ -125,6 +132,12 @@
         src: "{{ playbook_dir }}/templates/kubernetes-cri.conf"
         dest: /etc/sysctl.d/99-kubernetes-cri.conf
 
+    - name: Configure the kubeadm completion code for bash
+      lineinfile:
+        path: /home/vagrant/.bashrc
+        line: "source <(kubeadm completion bash)"
+        state: present
+
     - name: Load bridge-netfilter module
       shell: modprobe br_netfilter
 
@@ -159,6 +172,12 @@
         replace: '#\1\2\3swap\4'
         backup: yes
 
+    - name: Adding vagrant user to group docker
+      user:
+        name: vagrant
+        groups: docker
+        append: yes
+
 - hosts: master
   become: true
   strategy: free
@@ -184,14 +203,13 @@
     - name: Install kubectl
       apt:
         name:
-          - bash-completion
           - kubectl
         update_cache: yes
         state: present
         force: yes
       tags: apt
 
-    - name: Configure kubectl to autocomplete
+    - name: Configure the kubectl completion code for bash
       lineinfile:
         path: /home/vagrant/.bashrc
         line: "source <(kubectl completion bash)"
