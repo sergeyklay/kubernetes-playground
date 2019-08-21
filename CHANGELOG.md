@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Changed
 - Collect resulting artifacts during the creating cluster at the common place
+- Improved swap configuration on the cluster
 
 ### Fixed
 - Correct kubelet configuration for the cluster nodes

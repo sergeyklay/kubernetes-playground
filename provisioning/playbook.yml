@@ -175,15 +175,23 @@
         autoremove: yes
       tags: apt
 
-    - name: Disable swap for current session
-      shell: swapoff -a
+    - name: Checking swap status
+      command: /sbin/swapon -s
+      register: swapon
+      changed_when: no
 
-    - name: Disable swap permanently
-      replace:
-        path: /etc/fstab
-        regexp: '^(\s*)([^#\n]+\s+)(\w+\s+)swap(\s+.*)$'
-        replace: '#\1\2\3swap\4'
-        backup: yes
+    - name: Disable swap for current session
+      command: /sbin/swapoff -a
+      when: swapon.stdout
+
+    - name: Remove swapfile from /etc/fstab
+      mount:
+        name: "{{ item }}"
+        fstype: swap
+        state: absent
+      with_items:
+        - swap
+        - none
 
     - name: Adding vagrant user to group docker
       user:
