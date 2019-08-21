@@ -94,7 +94,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       v.customize ['modifyvm', :id, '--name', 'ctl']
     end
 
-    # Initial setup ssh access and install Ansible
+    # Install Ansible
     ctl.vm.provision :shell, inline: <<-SHELL
       add-apt-repository ppa:ansible/ansible -y > /dev/null 2>&1
       apt-get update -y -qq > /dev/null 2>&1
