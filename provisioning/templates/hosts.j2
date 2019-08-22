@@ -9,7 +9,7 @@
 
 {% for host in groups['cluster'] %}
 {% if hostvars[host].ansible_fqdn != ansible_fqdn %}
-{{ host  }}	{{ hostvars[host].ansible_fqdn }}	{{ hostvars[host].ansible_hostname }}
+{{ hostvars[host].ansible_host  }}	{{ hostvars[host].ansible_fqdn }}	{{ hostvars[host].ansible_hostname }}
 {% endif %}
 {% endfor  %}
 

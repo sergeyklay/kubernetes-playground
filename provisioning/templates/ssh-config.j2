@@ -10,9 +10,9 @@ Host *
 {% for host in groups['cluster'] %}
 {% if hostvars[host].ansible_fqdn != ansible_fqdn %}
 Host {{ hostvars[host].ansible_hostname }}
-  Hostname {{ host  }}
+  Hostname {{ hostvars[host].ansible_fqdn  }}
   User vagrant
-  IdentityFile /vagrant/.vagrant/machines/{{ hostvars[host].ansible_hostname }}/virtualbox/private_key
+  IdentityFile /vagrant/.vagrant/machines/{{ host }}/virtualbox/private_key
 
 {% endif %}
 {% endfor  %}

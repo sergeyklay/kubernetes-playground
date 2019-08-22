@@ -1,6 +1,9 @@
 ---
-- name: Ansible host
-  hosts: ctl
+- name: Gather Facts
+  hosts: all
+
+- name: Configure Ansible Controller
+  hosts: localhost
   connection: local
   tasks:
     - name: Configure SSH access
@@ -14,7 +17,6 @@
 - hosts: all
   become: yes
   strategy: free
-  gather_facts: yes
   tasks:
     - name: Prevent kernel from being upgraded
       dpkg_selections:
@@ -240,10 +242,10 @@
       shell: "kubeadm config images pull"
 
     - name: Bootstrap Kubernetes control-plane node
-      shell: "kubeadm init --apiserver-advertise-address={{ ansible_host }} --pod-network-cidr=192.168.0.0/16 >> {{ ansible_hostname }}-cluster.log"
+      shell: "kubeadm init --apiserver-advertise-address={{ ansible_host }} --pod-network-cidr=192.168.0.0/16 >> cluster.log"
       args:
-        chdir: /vagrant/logs
-        creates: "{{ ansible_hostname }}-cluster.log"
+        chdir: "/vagrant/.vagrant/machines/{{ ansible_hostname }}/virtualbox"
+        creates: "cluster.log"
 
     - name: Create .kube directory
       become: yes
@@ -263,18 +265,18 @@
     - name: Install Pod network Add-On
       become: yes
       become_user: vagrant
-      shell: "kubectl apply -f https://docs.projectcalico.org/v3.8/manifests/calico.yaml >> {{ ansible_hostname }}-network.log"
+      shell: "kubectl apply -f https://docs.projectcalico.org/v3.8/manifests/calico.yaml >> network.log"
       args:
-        chdir: /vagrant/logs
-        creates: "{{ ansible_hostname }}-network.log"
+        chdir: "/vagrant/.vagrant/machines/{{ ansible_hostname }}/virtualbox"
+        creates: "network.log"
 
     - name: Install Dashboard Add-On
       become: yes
       become_user: vagrant
-      shell: "kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml >> {{ ansible_hostname }}-dashboard.log"
+      shell: "kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml >> dashboard.log"
       args:
-        chdir: /vagrant/logs
-        creates: "{{ ansible_hostname }}-dashboard.log"
+        chdir: "/vagrant/.vagrant/machines/{{ ansible_hostname }}/virtualbox"
+        creates: "dashboard.log"
 
 - name: Setting up joining to the Kubernetes cluster
   hosts: master
@@ -294,7 +296,7 @@
   become: yes
   tasks:
     - name: Join to cluster
-      shell: "{{ hostvars[groups['master'][0]].join_command }} >> {{ ansible_hostname }}-joined.log"
+      shell: "{{ hostvars[groups['masters'][0]].join_command }} >> joined.log"
       args:
-        chdir: /vagrant/logs
-        creates: "{{ ansible_hostname }}-joined.log"
+        chdir: "/vagrant/.vagrant/machines/{{ ansible_hostname }}/virtualbox"
+        creates: "joined.log"
