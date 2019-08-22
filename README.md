@@ -13,12 +13,12 @@ This project allows you to create a Kubernetes cluster with control-plane node (
 and two (by default) worker nodes (where your workloads, like Pods and Deployments run).
 Components used by default are provided below:
 
-| IP            | Hostname        | Components                                                |
-| ------------- | --------------- | --------------------------------------------------------- |
-| 192.168.77.9  | `ctl.kp.vm`     | Ansible Controller to run provision on Kubernetes cluster |
-| 192.168.77.10 | `master.kp.vm`  | `kube-apiserver`, `kube-controller-manager`, `kube-addon-manager`, `kube-scheduler`, `etcd`, `kubelet`, `kubeadm`, `kubctl`, `docker-ce`, `dashboard`, `calico` |
-| 192.168.77.11 | `worker1.kp.vm` | `kubelet`, `kubeadm`, `docker-ce`                         |
-| 192.168.77.12 | `worker2.kp.vm` | `kubelet`, `kubeadm`, `docker-ce`                         |
+| IP          | Hostname        | Components                                                |
+| ----------- | --------------- | --------------------------------------------------------- |
+| 172.17.8.9  | `ctl.kp.vm`     | Ansible Controller to run provision on Kubernetes cluster |
+| 172.17.8.10 | `master.kp.vm`  | `kube-apiserver`, `kube-controller-manager`, `kube-addon-manager`, `kube-scheduler`, `etcd`, `kubelet`, `kubeadm`, `kubctl`, `docker-ce`, `dashboard`, `calico` |
+| 172.17.8.11 | `worker1.kp.vm` | `kubelet`, `kubeadm`, `docker-ce`                         |
+| 172.17.8.12 | `worker2.kp.vm` | `kubelet`, `kubeadm`, `docker-ce`                         |
 
 ## Prerequisites
 
@@ -115,10 +115,13 @@ you must create a secure channel to your Kubernetes cluster using `kubectl`:
 kubectl proxy --accept-hosts='^*$'
 ```
 
-Now access Dashboard at:
+And access Dashboard at:
 
 [`http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/`](
 http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/).
+
+To find out how to create sample user and log in follow
+[Creating sample user](https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md) guide.
 
 ## License
 
