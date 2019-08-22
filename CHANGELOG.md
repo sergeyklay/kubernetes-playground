@@ -9,9 +9,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Collect resulting artifacts during the creating cluster at the common place
 - Improved swap configuration on the cluster
+- Changed network adapter to Paravirtualized Network (`virtio`)
+- Changed IP range to `172.17.8.9 - 172.17.8.12`
+- Changed logs place to `.vagrant/machines/<VM NAME>/virtualbox`
+- Changed Ansible inventory file format
 
 ### Fixed
-- Correct kubelet configuration for the cluster nodes
+- Fixed kubelet configuration for the cluster nodes
+- Fixed provision Ansible Controller w/o ssh connection
+
+### Removed
+- Removed no longer needed IDE Controller from all VMs
 
 ## [1.3.0] - 2019-08-20
 ### Changed
@@ -50,7 +58,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Added ability to bind kubernetes default proxy port
 
 ### Changed
-- Change IP range to `192.168.77.9 - 192.168.77.12`
+- Changed IP range to `192.168.77.9 - 192.168.77.12`
 
 ## [1.1.0] - 2019-08-19
 ### Added
