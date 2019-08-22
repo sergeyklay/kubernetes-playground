@@ -46,7 +46,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     v.gui = false
     v.memory = NODE_MEMORY
     v.cpus = NODE_CPUS
+
+    # Paravirtualized Network
+    v.default_nic_type = 'virtio'
+
     v.customize ['modifyvm', :id, '--vrde', 'off']
+    v.customize ['storagectl', :id, '--name', 'IDE Controller', '--remove']
   end
 end
 
@@ -54,7 +59,7 @@ end
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define 'master', primary: true do |master|
     master.vm.hostname = 'master.kp.vm'
-    master.vm.network :private_network, ip: '192.168.77.10'
+    master.vm.network :private_network, ip: '172.17.8.10'
 
     # Bind kubernetes admin port so we can administrate from host
     master.vm.network :forwarded_port, guest: 6443, host: 6443 if EXPOSE_MASTER
@@ -73,7 +78,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   (1..NODE_WORKERS).each do |i|
     config.vm.define "worker#{i}" do |worker|
       worker.vm.hostname = "worker#{i}.kp.vm"
-      worker.vm.network :private_network, ip: '192.168.77.' + (10 + i).to_s
+      worker.vm.network :private_network, ip: '172.17.8.' + (10 + i).to_s
 
       worker.vm.provider :virtualbox do |v|
         v.customize ['modifyvm', :id, '--name', "worker#{i}"]
@@ -86,7 +91,7 @@ end
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define 'ctl' do |ctl|
     ctl.vm.hostname = 'ctl.kp.vm'
-    ctl.vm.network :private_network, ip: '192.168.77.9'
+    ctl.vm.network :private_network, ip: '172.17.8.9'
 
     ctl.vm.provider :virtualbox do |v|
       v.memory = 384
@@ -103,9 +108,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     ctl.vm.provision :ansible_local do |ansible|
       ansible.become         = true
-      ansible.limit          = 'all'
+      ansible.limit          = 'all,localhost'
       ansible.playbook       = 'provisioning/playbook.yml'
-      ansible.inventory_path = 'provisioning/hosts.yml'
+      ansible.config_file    = 'provisioning/ansible.cfg'
+      ansible.inventory_path = 'provisioning/inventory/inventory.ini'
     end
   end
 end
