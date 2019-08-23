@@ -10,7 +10,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Collect resulting artifacts during the creating cluster at the common place
 - Improved swap configuration on the cluster
 - Changed network adapter to Paravirtualized Network (`virtio`)
-- Changed IP range to `172.17.8.9 - 172.17.8.12`
 - Changed logs place to `.vagrant/machines/<VM NAME>/virtualbox`
 - Changed Ansible inventory file format
 

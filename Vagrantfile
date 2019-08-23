@@ -57,7 +57,7 @@ end
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define 'master', primary: true do |master|
     master.vm.hostname = 'master.kp.vm'
-    master.vm.network :private_network, ip: '172.17.8.10'
+    master.vm.network :private_network, ip: '192.168.77.10'
 
     # Bind kubernetes admin port so we can administrate from host
     master.vm.network :forwarded_port, guest: 6443, host: 6443 if EXPOSE_MASTER
@@ -77,7 +77,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   (1..NODE_WORKERS).each do |i|
     config.vm.define "worker#{i}" do |worker|
       worker.vm.hostname = "worker#{i}.kp.vm"
-      worker.vm.network :private_network, ip: '172.17.8.' + (10 + i).to_s
+      worker.vm.network :private_network, ip: '192.168.77.' + (10 + i).to_s
 
       worker.vm.provider :virtualbox do |v|
         v.customize ['modifyvm', :id, '--name', "worker#{i}"]
@@ -91,7 +91,7 @@ end
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define 'ctl' do |ctl|
     ctl.vm.hostname = 'ctl.kp.vm'
-    ctl.vm.network :private_network, ip: '172.17.8.9'
+    ctl.vm.network :private_network, ip: '192.168.77.9'
 
     ctl.vm.provider :virtualbox do |v|
       v.memory = 384

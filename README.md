@@ -13,12 +13,12 @@ This project allows you to create a Kubernetes cluster with control-plane node (
 and two (by default) worker nodes (where your workloads, like Pods and Deployments run).
 Components used by default are provided below:
 
-| IP          | Hostname        | Components                                                |
-| ----------- | --------------- | --------------------------------------------------------- |
-| 172.17.8.9  | `ctl.kp.vm`     | Ansible Controller to run provision on Kubernetes cluster |
-| 172.17.8.10 | `master.kp.vm`  | `kube-apiserver`, `kube-controller-manager`, `kube-addon-manager`, `kube-scheduler`, `etcd`, `kubelet`, `kubeadm`, `kubctl`, `docker-ce`, `dashboard`, `calico` |
-| 172.17.8.11 | `worker1.kp.vm` | `kubelet`, `kubeadm`, `docker-ce`                         |
-| 172.17.8.12 | `worker2.kp.vm` | `kubelet`, `kubeadm`, `docker-ce`                         |
+| IP            | Hostname        | Components                                                |
+| ------------- | --------------- | --------------------------------------------------------- |
+| 192.168.77.9  | `ctl.kp.vm`     | Ansible Controller to run provision on Kubernetes cluster |
+| 192.168.77.10 | `master.kp.vm`  | `kube-apiserver`, `kube-controller-manager`, `kube-addon-manager`, `kube-scheduler`, `etcd`, `kubelet`, `kubeadm`, `kubctl`, `docker-ce`, `dashboard`, `calico` |
+| 192.168.77.11 | `worker1.kp.vm` | `kubelet`, `kubeadm`, `docker-ce`                         |
+| 192.168.77.12 | `worker2.kp.vm` | `kubelet`, `kubeadm`, `docker-ce`                         |
 
 ## Prerequisites
 
@@ -122,6 +122,20 @@ http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-da
 
 To find out how to create sample user and log in follow
 [Creating sample user](https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md) guide.
+
+## Clean-up
+
+Execute the following command to remove the virtual machines created for the Kubernetes cluster:
+
+```shell script
+vagrant destroy -f
+```
+
+You can destroy individual machines by:
+
+```shell script
+vagrant destroy <VM NAME> -f
+```
 
 ## License
 
