@@ -49,9 +49,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     # Paravirtualized Network
     v.default_nic_type = 'virtio'
-
     v.customize ['modifyvm', :id, '--vrde', 'off']
-    v.customize ['storagectl', :id, '--name', 'IDE Controller', '--remove']
   end
 end
 
@@ -69,6 +67,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     master.vm.provider :virtualbox do |v|
       v.customize ['modifyvm', :id, '--name', 'master']
+      ensure_ide_is_absent(v, 'master')
     end
   end
 end
@@ -82,6 +81,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       worker.vm.provider :virtualbox do |v|
         v.customize ['modifyvm', :id, '--name', "worker#{i}"]
+        ensure_ide_is_absent(v, "worker#{i}")
       end
     end
   end
@@ -97,6 +97,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       v.memory = 384
       v.cpus = 1
       v.customize ['modifyvm', :id, '--name', 'ctl']
+      ensure_ide_is_absent(v, 'ctl')
     end
 
     # Install Ansible
