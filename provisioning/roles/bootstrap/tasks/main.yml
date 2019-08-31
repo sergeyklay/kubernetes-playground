@@ -15,6 +15,12 @@
     groups: systemd-journal
     append: yes
 
+- name: Update package management cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  tags: apt
+
 - name: Upgrade all packages to the latest version
   shell: "apt-get upgrade --quiet --yes"
   tags: apt

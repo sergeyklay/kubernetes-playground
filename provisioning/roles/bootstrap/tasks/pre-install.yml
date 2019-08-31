@@ -16,6 +16,8 @@
       - curl
       - bash-completion
       - vim
+      - python-apt
+      - aufs-tools
     update_cache: yes
     state: present
   tags: apt
