@@ -1,0 +1,7 @@
+---
+- name: Install Dashboard Add-On
+  become_user: "{{ regular_user }}"
+  shell: "kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml >> dashboard.log"
+  args:
+    chdir: "/vagrant/.vagrant/machines/{{ ansible_hostname }}/virtualbox"
+    creates: "dashboard.log"

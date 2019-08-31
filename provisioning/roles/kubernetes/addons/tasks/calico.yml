@@ -1,0 +1,7 @@
+---
+- name: Install Pod network Add-On
+  become_user: "{{ regular_user }}"
+  shell: "kubectl apply -f https://docs.projectcalico.org/v3.8/manifests/calico.yaml >> network.log"
+  args:
+    chdir: "/vagrant/.vagrant/machines/{{ ansible_hostname }}/virtualbox"
+    creates: "network.log"

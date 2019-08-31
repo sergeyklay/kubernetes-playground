@@ -1,0 +1,31 @@
+---
+- name: Create necessary directories if they don't exist
+  file:
+    path: /etc/kubernetes/manifests
+    state: directory
+    recurse: yes
+
+- name: Create addon-manager pod on master node
+  template:
+    src: addon-manager.yml.j2
+    dest: /etc/kubernetes/manifests/kube-addon-manager.yaml
+
+- name: Bootstrap Kubernetes control-plane node
+  shell: "kubeadm init --apiserver-advertise-address={{ ansible_host }} --pod-network-cidr=192.168.0.0/16 >> cluster.log"
+  args:
+    chdir: "/vagrant/.vagrant/machines/{{ ansible_hostname }}/virtualbox"
+    creates: "cluster.log"
+
+- name: Create .kube directory
+  become_user: "{{ regular_user }}"
+  file:
+    path: "/home/{{ regular_user }}/.kube"
+    state: directory
+    mode: "0755"
+
+- name: Copy admin.conf to user's kube config
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: "/home/{{ regular_user }}/.kube/config"
+    remote_src: yes
+    owner: "{{ regular_user }}"

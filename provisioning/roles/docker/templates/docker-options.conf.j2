@@ -1,0 +1,6 @@
+# {{ ansible_managed }}
+
+[Service]
+Environment="DOCKER_OPTS=--iptables={{ docker_iptables_enabled | default('false') }} \
+--data-root={{ docker_data_root }} --log-driver {{ docker_log_driver }} {{ docker_log_opts }} \
+--storage-driver {{ docker_storage_driver }} --exec-opt {{ docker_exec_opts }}"

@@ -1,0 +1,22 @@
+---
+- name: Prevent kernel from being upgraded
+  dpkg_selections:
+    name: "{{ item }}"
+    selection: hold
+  with_items:
+    - "linux-image-{{ ansible_kernel }}"
+    - "linux-modules-{{ ansible_kernel }}"
+    - "linux-modules-extra-{{ ansible_kernel }}"
+  tags: apt
+
+- name: Adding regular user to group systemd-journal
+  user:
+    name: "{{ regular_user }}"
+    groups: systemd-journal
+    append: yes
+
+- name: Upgrade all packages to the latest version
+  shell: "apt-get upgrade --quiet --yes"
+  tags: apt
+
+- import_tasks: pre-install.yml

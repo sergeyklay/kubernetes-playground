@@ -1,0 +1,26 @@
+---
+- name: Add the Google signing key
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    state: present
+  tags: apt
+
+- name: Add the k8s APT repository
+  apt_repository:
+    repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+    filename: 'kubernetes'
+    state: present
+  tags: apt
+
+- name: Install packages
+  apt:
+    name:
+      - ebtables
+      - ethtool
+      - socat
+    state: present
+    force: yes
+  tags: apt
+
+- import_tasks: swapoff.yml
+- import_tasks: network.yml

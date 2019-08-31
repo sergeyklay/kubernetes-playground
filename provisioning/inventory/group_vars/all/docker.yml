@@ -1,0 +1,18 @@
+---
+# Used to set docker daemon iptables options to true
+docker_iptables_enabled: "false"
+
+# Root directory of persistent Docker state
+docker_data_root: "/var/lib/docker"
+
+# Rotate container stderr/stdout logs at 100m and keep last 3
+docker_log_opts: "--log-opt max-size=100m --log-opt max-file=3"
+
+# Default driver for container logs
+docker_log_driver: "json-file"
+
+# Storage driver to use
+docker_storage_driver: "overlay2"
+
+# Runtime execution options
+docker_exec_opts: "native.cgroupdriver=systemd"

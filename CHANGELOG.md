@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Changed network adapter to Paravirtualized Network (`virtio`)
 - Changed logs place to `.vagrant/machines/<VM NAME>/virtualbox`
 - Changed Ansible inventory file format
+- Refactor Ansible provisioning
 
 ### Fixed
 - Fixed kubelet configuration for the cluster nodes

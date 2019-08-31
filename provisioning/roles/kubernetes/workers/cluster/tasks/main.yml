@@ -1,0 +1,6 @@
+---
+- name: Join to cluster
+  shell: "{{ hostvars[groups['masters'][0]].join_command }} >> joined.log"
+  args:
+    chdir: "/vagrant/.vagrant/machines/{{ ansible_hostname }}/virtualbox"
+    creates: "joined.log"

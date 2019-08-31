@@ -1,0 +1,3 @@
+---
+- import_tasks: calico.yml
+- import_tasks: dashboard.yml

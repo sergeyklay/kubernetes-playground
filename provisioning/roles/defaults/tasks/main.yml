@@ -1,0 +1,24 @@
+---
+- name: Ensure .ssh folder exists
+  file:
+    name: "/home/{{ regular_user }}/.ssh"
+    state: directory
+    owner: "{{ regular_user }}"
+    group: "{{ regular_group }}"
+    mode: "0700"
+
+- name: Configure SSH access
+  template:
+    src: ssh-config.j2
+    dest: "/home/{{ regular_user }}/.ssh/config"
+    owner: "{{ regular_user }}"
+    group: "{{ regular_group }}"
+    mode: "0600"
+
+- name: Set host name resolution
+  template:
+    src: hosts.j2
+    dest: /etc/hosts
+    owner: root
+    group: root
+    mode: "0644"

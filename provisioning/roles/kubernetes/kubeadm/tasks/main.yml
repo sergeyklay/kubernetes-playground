@@ -1,0 +1,19 @@
+---
+- name: Install packages
+  apt:
+    name: kubeadm
+    state: present
+    force: yes
+  tags: apt
+
+- name: Prevent kubeadm from being upgraded
+  dpkg_selections:
+    name: kubeadm
+    selection: hold
+  tags: apt
+
+- name: Configure the kubeadm completion code for bash
+  lineinfile:
+    path: "/home/{{ regular_user }}/.bashrc"
+    line: "source <(kubeadm completion bash)"
+    state: present

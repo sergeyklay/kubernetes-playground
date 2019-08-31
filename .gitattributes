@@ -3,4 +3,3 @@
 
 Vagrantfile   linguist-language=ruby
 *.cfg         linguist-language=INI
-*.conf        linguist-language=INI

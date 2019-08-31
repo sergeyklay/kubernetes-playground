@@ -1,0 +1,62 @@
+---
+- name: Add Docker's official GPG key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+  tags: apt
+
+- name: Add Docker apt repository
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable
+    filename: 'docker'
+    state: present
+  tags: apt
+
+- name: Install packages
+  apt:
+    name: 'docker-ce=18.06.2~ce~3-0~ubuntu'
+    state: present
+    force: yes
+  tags: apt
+
+- name: Prevent docker from being upgraded
+  dpkg_selections:
+    name: docker-ce
+    selection: hold
+  tags: apt
+
+- name: Create docker service systemd directory if it doesn't exist
+  file:
+    name: /etc/systemd/system/docker.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Ensure docker data root folder exists
+  file:
+    name: "{{ docker_data_root }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Write docker options systemd drop-in
+  template:
+    src: docker-options.conf.j2
+    dest: /etc/systemd/system/docker.service.d/docker-options.conf
+  register: docker_options
+
+- name: Restart service docker
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: docker
+    no_block: yes
+  when: docker_options.changed
+
+- name: Adding regular user to docker group
+  user:
+    name: "{{ regular_user }}"
+    groups: docker
+    append: yes

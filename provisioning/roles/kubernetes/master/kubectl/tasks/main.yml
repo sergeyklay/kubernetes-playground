@@ -1,0 +1,21 @@
+---
+- name: Install kubectl
+  apt:
+    name:
+      - kubectl
+    update_cache: yes
+    state: present
+    force: yes
+  tags: apt
+
+- name: Prevent kubectl from being upgraded
+  dpkg_selections:
+    name: kubectl
+    selection: hold
+  tags: apt
+
+- name: Configure the kubectl completion code for bash
+  lineinfile:
+    path: /home/vagrant/.bashrc
+    line: "source <(kubectl completion bash)"
+    state: present

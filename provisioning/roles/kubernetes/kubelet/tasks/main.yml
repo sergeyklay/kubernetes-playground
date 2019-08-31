@@ -1,0 +1,30 @@
+---
+- name: Install packages
+  apt:
+    name: kubelet
+    state: present
+    force: yes
+  tags: apt
+
+- name: Prevent kubelet from being upgraded
+  dpkg_selections:
+    name: kubelet
+    selection: hold
+  tags: apt
+
+- name: Setup kubelet daemon
+  template:
+    src: kubelet.j2
+    dest: /etc/default/kubelet
+    owner: root
+    group: root
+    mode: "0644"
+  register: kubelet_default
+
+- name: Restart service kubelet
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: kubelet
+    no_block: yes
+  when: kubelet_default.changed
