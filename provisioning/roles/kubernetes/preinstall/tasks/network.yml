@@ -4,6 +4,9 @@
     src: kubernetes-cri.conf.j2
     dest: /etc/sysctl.d/99-kubernetes-cri.conf
 
+- name: Load settings from all system configuration files
+  command: sysctl --system
+
 - name: Load bridge-netfilter module
   shell: modprobe br_netfilter
 

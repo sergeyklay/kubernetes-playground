@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 #### Added
 - Install missing apt packages
 
+### Changed
+- Load settings from all system configuration files at provision time
+
 ## [1.4.0] - 2019-08-31
 ### Changed
 - Collect resulting artifacts during the creating cluster at the common place
