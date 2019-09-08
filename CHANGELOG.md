@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - Load settings from all system configuration files at provision time
+- Amended dockerd options 
 
 ### Fixed
 - Fixed ssh and hosts configuration
