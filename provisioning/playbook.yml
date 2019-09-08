@@ -2,13 +2,10 @@
 - hosts: all
   become: no
 
-- hosts: localhost
-  roles:
-    - role: defaults
-      tags: localhost
-
 - hosts: cluster:localhost
   roles:
+    - role: defaults
+      tags: network
     - role: bootstrap
       tags: bootstrap
 
