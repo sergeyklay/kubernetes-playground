@@ -47,13 +47,32 @@
     dest: /etc/systemd/system/docker.service.d/docker-options.conf
   register: docker_options
 
-- name: Restart service docker
+- name: Write docker unit systemd drop-in
+  template:
+    src: docker.service.j2
+    dest: /lib/systemd/system/docker.service
+  register: docker_unit
+
+- name: Populate service facts
+  service_facts:
+
+- name: Restart docker service
   systemd:
     state: restarted
     daemon_reload: yes
     name: docker
     no_block: yes
-  when: docker_options.changed
+  when: docker_options.changed or docker_unit.changed
+
+- name: Restart kubelet service
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: kubelet
+    no_block: yes
+  when:
+    - "'kubelet.service' in services"
+    - docker_options.changed or docker_unit.changed
 
 - name: Adding regular user to docker group
   user:

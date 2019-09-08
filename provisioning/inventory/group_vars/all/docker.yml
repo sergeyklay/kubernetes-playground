@@ -15,4 +15,4 @@ docker_log_driver: "json-file"
 docker_storage_driver: "overlay2"
 
 # Runtime execution options
-docker_exec_opts: "native.cgroupdriver=systemd"
+docker_exec_opts: "native.cgroupdriver=cgroupfs"

@@ -8,17 +8,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 #### Added
 - Install missing apt packages
+- Added ability to communicate with dockerd from hosts system using
+  `DOCKER_HOST` variable
 
 ### Changed
 - Load settings from all system configuration files at provision time
-- Amended dockerd options 
+- Amended dockerd options
 
 ### Fixed
 - Fixed ssh and hosts configuration
 
 ## [1.4.0] - 2019-08-31
 ### Changed
-- Collect resulting artifacts during the creating cluster at the common place
+- Collect resulting artifacts during the creating cluster at the common
+  place
 - Improved swap configuration on the cluster
 - Changed network adapter to Paravirtualized Network (`virtio`)
 - Changed logs place to `.vagrant/machines/<VM NAME>/virtualbox`
