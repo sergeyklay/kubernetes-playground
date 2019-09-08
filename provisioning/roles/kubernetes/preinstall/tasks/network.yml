@@ -8,7 +8,7 @@
   command: sysctl --system
 
 - name: Load bridge-netfilter module
-  shell: modprobe br_netfilter
+  command: modprobe br_netfilter
 
 - name: Setup bridge-netfilter module
   template:

@@ -22,7 +22,7 @@
   tags: apt
 
 - name: Upgrade all packages to the latest version
-  shell: "apt-get upgrade --quiet --yes"
+  command: "apt-get upgrade --quiet --yes"
   tags: apt
 
 - import_tasks: pre-install.yml
