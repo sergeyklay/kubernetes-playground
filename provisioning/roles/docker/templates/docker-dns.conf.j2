@@ -1,0 +1,4 @@
+# {{ ansible_managed }}
+
+[Service]
+Environment="DOCKER_DNS_OPTIONS={% for d in docker_dns_servers %}--dns {{ d }} {% endfor %}"
