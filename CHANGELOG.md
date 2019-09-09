@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Load settings from all system configuration files at provision time
 - Amended dockerd options
+- Change native cgroup driver for kubectl and docker to `systemd`
 
 ### Fixed
 - Fixed ssh and hosts configuration

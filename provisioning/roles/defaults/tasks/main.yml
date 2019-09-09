@@ -1,7 +1,7 @@
 ---
 - name: Ensure .ssh folder exists
   file:
-    name: "/home/{{ regular_user }}/.ssh"
+    path: "/home/{{ regular_user }}/.ssh"
     state: directory
     owner: "{{ regular_user }}"
     group: "{{ regular_group }}"

@@ -21,10 +21,40 @@
     mode: "0644"
   register: kubelet_default
 
+- name: Create kubelet service systemd directory if it doesn't exist
+  file:
+    path: /etc/systemd/system/kubelet.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Setup cgroups for kubelet daemon
+  template:
+    src: cgroups.conf.j2
+    dest: /etc/systemd/system/kubelet.service.d/11-cgroups.conf
+    owner: root
+    group: root
+    mode: "0644"
+  register: kubelet_cgroups
+
+- name: Setup docker dependency for kubelet daemon
+  template:
+    src: after-docker.conf.j2
+    dest: /etc/systemd/system/kubelet.service.d/12-after-docker.conf
+    owner: root
+    group: root
+    mode: "0644"
+  register: kubelet_after_docker
+
 - name: Restart service kubelet
   systemd:
     state: restarted
     daemon_reload: yes
     name: kubelet
     no_block: yes
-  when: kubelet_default.changed
+  tags: cgroups
+  when: kubelet_default.changed or
+        kubelet_after_docker.changed or
+        kubelet_cgroups.changed or
+        kubelet_cgroup.changed
