@@ -82,7 +82,7 @@ kubectl get pods --all-namespaces
 #
 # NAMESPACE     NAME                                       READY   STATUS    RESTARTS   AGE
 # kube-system   calico-kube-controllers-65b8787765-lvn9s   1/1     Running   0          3m42s
-# kube-system   calico-node-5qb6d                          0/1     Running   0          27s
+# kube-system   calico-node-5qb6d                          1/1     Running   0          27s
 # kube-system   calico-node-jfhfn                          1/1     Running   0          57s
 # kube-system   calico-node-tvrtv                          1/1     Running   0          3m42s
 # kube-system   coredns-5c98db65d4-5jq5s                   1/1     Running   0          5m59s
