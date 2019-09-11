@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+## [1.5.0] - 2019-09-12
 #### Added
 - Install missing apt packages
 - Added ability to communicate with dockerd from hosts system using
@@ -91,7 +92,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Initial release
 
-[Unreleased]: https://github.com/sergeyklay/kubernetes-playground/compare/1.4.0...HEAD
+[Unreleased]: https://github.com/sergeyklay/kubernetes-playground/compare/1.5.0...HEAD
+[1.5.0]: https://github.com/sergeyklay/kubernetes-playground/compare/1.4.0...1.5.0
 [1.4.0]: https://github.com/sergeyklay/kubernetes-playground/compare/1.3.0...1.4.0
 [1.3.0]: https://github.com/sergeyklay/kubernetes-playground/compare/1.2.1...1.3.0
 [1.2.1]: https://github.com/sergeyklay/kubernetes-playground/compare/1.2.0...1.2.1
