@@ -10,10 +10,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Install missing apt packages
 - Added ability to communicate with dockerd from hosts system using
   `DOCKER_HOST` variable
-- Setting up Docker DNS servers
 
 ### Changed
-- Load settings from all system configuration files at provision time
 - Amended dockerd options
 - Change native cgroup driver for kubectl and docker to `systemd`
 

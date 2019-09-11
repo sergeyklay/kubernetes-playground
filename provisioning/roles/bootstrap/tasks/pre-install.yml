@@ -10,14 +10,15 @@
   apt:
     name:
       - apt-transport-https
-      - ca-certificates
-      - gnupg-agent
-      - software-properties-common
-      - curl
-      - bash-completion
-      - vim
-      - python-apt
       - aufs-tools
+      - bash-completion
+      - ca-certificates
+      - curl
+      - dnsutils
+      - gnupg-agent
+      - python-apt
+      - software-properties-common
+      - vim
     update_cache: yes
     state: present
   tags: apt

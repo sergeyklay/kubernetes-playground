@@ -1,21 +1,4 @@
 ---
-# TODO: Make it better
-- name: Grab DNS server from resolv.conf
-  shell: "grep -E '^nameserver ([0-9]{1,3}\\.){1,3}[0-9]{1,3}$' /etc/resolv.conf | cut -d' ' -f2"
-  register: found_dns
-
-- name: Set DNS server for docker
-  set_fact:
-    docker_dns_servers: "{{ [found_dns.stdout|ipaddr|default(ansible_default_ipv4.gateway)] }}"
-
-- name: Add Google DNS servers
-  set_fact:
-    docker_dns_servers: "{{ docker_dns_servers + ['8.8.8.8'|ipaddr] }}"
-
-- name: Docker DNS servers
-  debug:
-    msg: "{{ docker_dns_servers }}"
-
 - name: Add Docker's official GPG key
   apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
@@ -64,12 +47,6 @@
     dest: /etc/systemd/system/docker.service.d/docker-options.conf
   register: docker_options
 
-- name: Write docker dns systemd drop-in
-  template:
-    src: docker-dns.conf.j2
-    dest: /etc/systemd/system/docker.service.d/docker-dns.conf
-  register: docker_dns
-
 - name: Write docker unit systemd drop-in
   template:
     src: docker.service.j2
@@ -86,8 +63,7 @@
     name: docker
     no_block: yes
   when: docker_options.changed or
-        docker_unit.changed or
-        docker_dns.changed
+        docker_unit.changed
 
 - name: Restart kubelet service
   systemd:
@@ -98,8 +74,7 @@
   when:
     - "'kubelet.service' in services"
     - docker_options.changed or
-      docker_unit.changed or
-      docker_dns.changed
+      docker_unit.changed
 
 - name: Adding regular user to docker group
   user:
