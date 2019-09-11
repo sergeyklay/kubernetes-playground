@@ -53,9 +53,15 @@ run commands as follows:
 
 ```shell script
 mkdir -p $HOME/.kube
-
-# To use "vagrant scp" install vagrant-scp plugin
 vagrant scp master:/home/vagrant/.kube/config $HOME/.kube/config
+```
+
+Notice, to use `vagrant scp` command you'll need install `vagrant-scp` plugin.
+Another way to obtain config is to use `scp` as follows:
+
+```shell script
+# use "vagrant" passowrd
+scp vagrant@192.168.77.10:/home/vagrant/.kube/config $HOME/.kube/config
 ```
 
 ## Test the installation
