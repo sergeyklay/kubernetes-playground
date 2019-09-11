@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Amended dockerd options
 - Change native cgroup driver for kubectl and docker to `systemd`
+- Changed host names to `*.k8s`
 
 ### Fixed
 - Fixed ssh and hosts configuration

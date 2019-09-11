@@ -12,15 +12,5 @@
     state: present
   tags: apt
 
-- name: Install packages
-  apt:
-    name:
-      - ebtables
-      - ethtool
-      - socat
-    state: present
-    force: yes
-  tags: apt
-
 - import_tasks: swapoff.yml
 - import_tasks: network.yml

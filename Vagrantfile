@@ -56,7 +56,7 @@ end
 # Master node
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define 'master', primary: true do |master|
-    master.vm.hostname = 'master.kp.vm'
+    master.vm.hostname = 'master.k8s'
     master.vm.network :private_network, ip: '192.168.77.10'
 
     # Bind kubernetes admin port so we can administrate from host
@@ -76,7 +76,7 @@ end
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   (1..NODE_WORKERS).each do |i|
     config.vm.define "worker#{i}" do |worker|
-      worker.vm.hostname = "worker#{i}.kp.vm"
+      worker.vm.hostname = "worker#{i}.k8s"
       worker.vm.network :private_network, ip: '192.168.77.' + (10 + i).to_s
 
       worker.vm.provider :virtualbox do |v|
@@ -90,7 +90,7 @@ end
 # Bootstrap VM
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define 'ctl' do |ctl|
-    ctl.vm.hostname = 'ctl.kp.vm'
+    ctl.vm.hostname = 'ctl.k8s'
     ctl.vm.network :private_network, ip: '192.168.77.9'
 
     ctl.vm.provider :virtualbox do |v|
